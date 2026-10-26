@@ -1,0 +1,67 @@
+#!/bin/bash
+set -euo pipefail
+[ "$(/usr/bin/id -u)" = 0 ] || exit 1
+# Only the currently booted system is supported. Never install a daemon to another volume.
+[ "${3:-/}" = / ] || { echo 'Install Keep Mac Awake on the running startup disk.' >&2; exit 1; }
+TASK_SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+TASK_STATE='/Library/Application Support/KeepMacAwake'
+TASK_INSTALL='/Library/PrivilegedHelperTools/com.keepmacawake'
+for TASK_PATH in '/Library/PrivilegedHelperTools' "$TASK_INSTALL" '/Library/LaunchDaemons' '/Library/LaunchAgents' "$TASK_STATE"; do
+    [ ! -L "$TASK_PATH" ] || { echo 'Unexpected symbolic link in a Keep Mac Awake installation path.' >&2; exit 1; }
+    if [ -e "$TASK_PATH" ]; then
+        [ -d "$TASK_PATH" ] && [ "$(/usr/bin/stat -f %u "$TASK_PATH")" = 0 ] || exit 1
+        TASK_MODE=$(/usr/bin/stat -f %Lp "$TASK_PATH")
+        [ "$((8#$TASK_MODE & 8#022))" = 0 ] || { echo 'Writable service directory; installation cancelled.' >&2; exit 1; }
+    fi
+done
+# NoSleepMac, this product's development name, uses its own services and journal
+# for the same system setting. Two sets would undo each other's changes, so its
+# own uninstaller must remove it first; nothing of it is changed here.
+for TASK_LABEL in com.bartdudzic.NoSleepMac.Helper com.bartdudzic.NoSleepMac.Watchdog; do
+    if [ -e "/Library/LaunchDaemons/$TASK_LABEL.plist" ] || /bin/launchctl print "system/$TASK_LABEL" >/dev/null 2>&1; then
+        echo 'NoSleepMac is installed. Remove it with its uninstaller, then install Keep Mac Awake.' >&2
+        exit 1
+    fi
+done
+# Installer must never follow a planted link at the application path.
+for TASK_PATH in '/Applications/Keep Mac Awake.app'; do
+    [ ! -L "$TASK_PATH" ] || { echo 'Unexpected symbolic link at a Keep Mac Awake application path.' >&2; exit 1; }
+done
+/bin/mkdir -p "$TASK_STATE"
+/usr/sbin/chown root:wheel "$TASK_STATE"
+/bin/chmod 700 "$TASK_STATE"
+# Ask running copies of the app to quit. Keep Mac Awake handles SIGTERM like
+# Quit and stops its session through the helper. Anything left is killed; the
+# steps below stop the services and restore the sleep setting in every case.
+# Only this app's executable path matches, never another program of that name.
+TASK_APP_PATTERN='^/Applications/Keep Mac Awake\.app/Contents/MacOS/Keep Mac Awake( |$)'
+if /usr/bin/pgrep -f "$TASK_APP_PATTERN" >/dev/null 2>&1; then
+    /usr/bin/pkill -TERM -f "$TASK_APP_PATTERN" >/dev/null 2>&1 || true
+    TASK_WAIT=0
+    while [ "$TASK_WAIT" -lt 50 ] && /usr/bin/pgrep -f "$TASK_APP_PATTERN" >/dev/null 2>&1; do
+        /bin/sleep 0.2
+        TASK_WAIT=$((TASK_WAIT + 1))
+    done
+    /usr/bin/pkill -KILL -f "$TASK_APP_PATTERN" >/dev/null 2>&1 || true
+fi
+# The per-user coordinator owns sessions. Stop it in every logged-in user's
+# session; on SIGTERM it ends its session through the helper first.
+TASK_AGENT='com.keepmacawake.Coordinator'
+for TASK_UID in $(/bin/ps -axo uid=,comm= | /usr/bin/awk '$2 ~ /loginwindow$/ && $1 != 0 {print $1}' | /usr/bin/sort -u); do
+    if /bin/launchctl print "gui/$TASK_UID/$TASK_AGENT" >/dev/null 2>&1; then
+        /bin/launchctl bootout "gui/$TASK_UID/$TASK_AGENT" >/dev/null 2>&1 || true
+    fi
+done
+# Remove launchd jobs before recovery. No old process may later write true again.
+for TASK_LABEL in com.keepmacawake.Helper com.keepmacawake.Watchdog; do
+    if /bin/launchctl print "system/$TASK_LABEL" >/dev/null 2>&1; then
+        /bin/launchctl kill SIGKILL "system/$TASK_LABEL" >/dev/null 2>&1 || true
+        /bin/launchctl bootout "system/$TASK_LABEL"
+    fi
+    if /bin/launchctl print "system/$TASK_LABEL" >/dev/null 2>&1; then
+        echo 'Could not stop the existing Keep Mac Awake service; installation cancelled.' >&2
+        exit 1
+    fi
+done
+# This fixed recovery executable is part of this package, never supplied by a client.
+"$TASK_SCRIPT_DIR/KeepMacAwakeRecovery" --recover

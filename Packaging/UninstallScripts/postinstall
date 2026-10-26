@@ -1,0 +1,69 @@
+#!/bin/bash
+set -euo pipefail
+[ "$(/usr/bin/id -u)" = 0 ] || exit 1
+[ "${3:-/}" = / ] || exit 1
+TASK_SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+TASK_INSTALL='/Library/PrivilegedHelperTools/com.keepmacawake'
+TASK_STATE='/Library/Application Support/KeepMacAwake'
+TASK_APP_ID='com.keepmacawake'
+TASK_APPS=('/Applications/Keep Mac Awake.app')
+for TASK_PATH in "$TASK_INSTALL" "$TASK_STATE" "${TASK_APPS[@]}"; do
+    [ ! -L "$TASK_PATH" ] || { echo 'Unexpected symbolic link; removal cancelled.' >&2; exit 1; }
+done
+# Decide before removing anything: only bundles with this product's identifier go.
+TASK_REMOVE_APPS=()
+for TASK_APP in "${TASK_APPS[@]}"; do
+    if [ -d "$TASK_APP" ]; then
+        TASK_ID=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$TASK_APP/Contents/Info.plist" 2>/dev/null || true)
+        if [ "$TASK_ID" = "$TASK_APP_ID" ]; then
+            TASK_REMOVE_APPS+=("$TASK_APP")
+        else
+            echo "Kept $TASK_APP: unexpected application identifier." >&2
+        fi
+    fi
+done
+# Ask the app to quit first, so it stops its own session; see preinstall.
+TASK_APP_PATTERN='^/Applications/Keep Mac Awake\.app/Contents/MacOS/Keep Mac Awake( |$)'
+if /usr/bin/pgrep -f "$TASK_APP_PATTERN" >/dev/null 2>&1; then
+    /usr/bin/pkill -TERM -f "$TASK_APP_PATTERN" >/dev/null 2>&1 || true
+    TASK_WAIT=0
+    while [ "$TASK_WAIT" -lt 50 ] && /usr/bin/pgrep -f "$TASK_APP_PATTERN" >/dev/null 2>&1; do
+        /bin/sleep 0.2
+        TASK_WAIT=$((TASK_WAIT + 1))
+    done
+    /usr/bin/pkill -KILL -f "$TASK_APP_PATTERN" >/dev/null 2>&1 || true
+fi
+# The per-user coordinator owns sessions. Stop it in every logged-in user's
+# session; on SIGTERM it ends its session through the helper first.
+TASK_AGENT='com.keepmacawake.Coordinator'
+for TASK_UID in $(/bin/ps -axo uid=,comm= | /usr/bin/awk '$2 ~ /loginwindow$/ && $1 != 0 {print $1}' | /usr/bin/sort -u); do
+    if /bin/launchctl print "gui/$TASK_UID/$TASK_AGENT" >/dev/null 2>&1; then
+        /bin/launchctl bootout "gui/$TASK_UID/$TASK_AGENT" >/dev/null 2>&1 || true
+    fi
+done
+for TASK_LABEL in com.keepmacawake.Helper com.keepmacawake.Watchdog; do
+    if /bin/launchctl print "system/$TASK_LABEL" >/dev/null 2>&1; then
+        /bin/launchctl kill SIGKILL "system/$TASK_LABEL" >/dev/null 2>&1 || true
+        /bin/launchctl bootout "system/$TASK_LABEL"
+    fi
+    if /bin/launchctl print "system/$TASK_LABEL" >/dev/null 2>&1; then exit 1; fi
+done
+# On recovery failure leave the helper and journal intact for another recovery attempt.
+"$TASK_SCRIPT_DIR/KeepMacAwakeRecovery" --recover
+for TASK_LABEL in com.keepmacawake.Helper com.keepmacawake.Watchdog; do
+    /bin/rm -f "/Library/LaunchDaemons/$TASK_LABEL.plist"
+done
+/bin/rm -f /Library/LaunchAgents/com.keepmacawake.Coordinator.plist
+TASK_CLI_LINK='/usr/local/bin/keepmacawake'
+if [ -L "$TASK_CLI_LINK" ] && [ "$(/usr/bin/readlink "$TASK_CLI_LINK")" = '/Applications/Keep Mac Awake.app/Contents/MacOS/keepmacawake' ]; then
+    /bin/rm -f "$TASK_CLI_LINK"
+fi
+/bin/rm -f "$TASK_INSTALL/KeepMacAwakeHelper" "$TASK_INSTALL/trust.json"
+/bin/rmdir "$TASK_INSTALL" 2>/dev/null || true
+# The recovery executable clears journal files. Remove only known service metadata.
+/bin/rm -f "$TASK_STATE/controller-heartbeat.json" "$TASK_STATE/watchdog-heartbeat.json" "$TASK_STATE/transaction.lock"
+/bin/rmdir "$TASK_STATE" 2>/dev/null || true
+for TASK_APP in ${TASK_REMOVE_APPS[@]+"${TASK_REMOVE_APPS[@]}"}; do
+    /bin/rm -rf "$TASK_APP"
+done
+/usr/sbin/pkgutil --forget com.keepmacawake >/dev/null 2>&1 || true

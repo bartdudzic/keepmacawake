@@ -1,0 +1,38 @@
+#!/bin/bash
+set -euo pipefail
+[ "$(/usr/bin/id -u)" = 0 ] || exit 1
+TASK_INSTALL='/Library/PrivilegedHelperTools/com.keepmacawake'
+# Preserve system ancestor permissions, but normalize our own privileged files.
+for TASK_FILE in "$TASK_INSTALL/KeepMacAwakeHelper" "$TASK_INSTALL/trust.json" "/Library/LaunchDaemons/com.keepmacawake.Helper.plist" "/Library/LaunchDaemons/com.keepmacawake.Watchdog.plist" "/Library/LaunchAgents/com.keepmacawake.Coordinator.plist"; do
+    [ -f "$TASK_FILE" ] && [ ! -L "$TASK_FILE" ] || exit 1
+    /usr/sbin/chown root:wheel "$TASK_FILE"
+    /bin/chmod 644 "$TASK_FILE"
+done
+/bin/chmod 755 "$TASK_INSTALL/KeepMacAwakeHelper"
+"$TASK_INSTALL/KeepMacAwakeHelper" --validate-installation
+for TASK_LABEL in com.keepmacawake.Watchdog com.keepmacawake.Helper; do
+    /bin/launchctl enable "system/$TASK_LABEL"
+    /bin/launchctl bootstrap system "/Library/LaunchDaemons/$TASK_LABEL.plist"
+done
+# The coordinator starts on demand for the user at the console now, and for
+# other users at their next login. Loading it never starts a session.
+TASK_CONSOLE_UID=$(/usr/bin/stat -f %u /dev/console)
+if [ "$TASK_CONSOLE_UID" != 0 ]; then
+    /bin/launchctl bootstrap "gui/$TASK_CONSOLE_UID" /Library/LaunchAgents/com.keepmacawake.Coordinator.plist >/dev/null 2>&1 ||
+        echo 'The background service will start at the next login.' >&2
+fi
+# The command-line tool stays in the signed app; /usr/local/bin gets a link,
+# but only where nothing else lives.
+TASK_CLI_TARGET='/Applications/Keep Mac Awake.app/Contents/MacOS/keepmacawake'
+TASK_CLI_LINK='/usr/local/bin/keepmacawake'
+if [ -L "$TASK_CLI_LINK" ] && [ "$(/usr/bin/readlink "$TASK_CLI_LINK")" = "$TASK_CLI_TARGET" ]; then
+    :
+elif [ -e "$TASK_CLI_LINK" ] || [ -L "$TASK_CLI_LINK" ]; then
+    echo 'Kept the existing /usr/local/bin/keepmacawake; the tool is inside the app.' >&2
+else
+    # A failure here leaves the tool inside the app; the services are already in place.
+    { [ -d /usr/local/bin ] || /bin/mkdir -p /usr/local/bin; } && /bin/ln -s "$TASK_CLI_TARGET" "$TASK_CLI_LINK" ||
+        echo 'Could not link /usr/local/bin/keepmacawake; the tool is inside the app.' >&2
+fi
+# Loading these services never starts a session. The user must choose Turn On.
+exit 0

@@ -1,0 +1,32 @@
+# Keep Mac Awake
+
+> A macOS menu bar app and command that keep an Apple silicon MacBook awake with the lid closed, for explicit sessions the user starts. AC power by default, optional battery use above a threshold, display off with the lid closed, a root watchdog that restores the sleep setting after failures. No data collection; the only network request is Restore purchase, when the user chooses it. macOS 26 or later. Free for 3 days, then 9 USD plus tax, one time, per Mac.
+
+## Install from an AI agent
+
+- Install or update: `curl -fsSL https://keepmacawake.com/install.sh | sh`
+- Uninstall: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`
+- Check without installing: append `-s -- --dry-run`; a specific release: `-s -- --version X.Y.Z`
+- The script downloads the package from the GitHub release and installs it only after its SHA-256, the Developer ID signature and Apple's notarization check out.
+- macOS asks the person at the Mac for an administrator password once, in a system dialog; tell them to expect it. There is no silent install.
+- Run it as the logged-in user, never with sudo. It refuses while a session runs (exit code 5), because installing or removing ends the session; ask the person before running `keepmacawake stop`.
+- Exit codes: 0 done, 1 failed, 2 invalid arguments, 3 this Mac is not supported (Apple silicon and macOS 26 or later only), 4 action needed from the person (the dialog was cancelled or could not be shown), 5 a session is running.
+- Nothing is turned on by installing. Afterwards `keepmacawake status --json` confirms the background service answers.
+
+## Use from an AI agent
+
+- Guide for agents (when to suggest it, installing with the user, limits): https://keepmacawake.com/agents.md
+- `keepmacawake start --hours N --json` (1 to 168) or `keepmacawake start --unlimited --json`
+- `keepmacawake status --json`, `keepmacawake stop --json`
+- `keepmacawake capabilities --json` describes commands, phases and exit codes
+- Run as the logged-in user, never with sudo. Exit code 4 means the user has to act (AC power, or `purchase_required` during or after the trial); 5 means a session already runs or none runs; 7 means no answer in time, so check `status`.
+- Agent skill: https://keepmacawake.com/skill/keepmacawake/SKILL.md
+
+## Docs
+
+- [README](README.md): what it does and does not do, install, update, uninstall, buying
+- [Command line](docs/COMMAND-LINE.md): commands, JSON keys, exit codes
+- [Architecture](docs/ARCHITECTURE.md): parts, privileges, trust chain, session lifecycle
+- [Failure modes](docs/FAILURE-MODES.md): what happens when something fails, and the evidence
+- [Privacy](docs/PRIVACY.md), [Security](SECURITY.md), [Support](docs/SUPPORT.md), [Terms](TERMS.md)
+- Website for agents: https://keepmacawake.com/llms.txt

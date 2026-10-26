@@ -1,0 +1,10 @@
+{
+  "name": "keepmacawake",
+  "owner": {
+    "name": "Bart Dudzic",
+    "email": "hi@keepmacawake.com"
+  },
+  "plugins": [
+    { "name": "keep-mac-awake", "source": "./plugins/keep-mac-awake" }
+  ]
+}

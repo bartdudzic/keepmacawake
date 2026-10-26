@@ -1,0 +1,7 @@
+{
+  "name": "keep-mac-awake",
+  "version": "1.0.0",
+  "description": "Lets your agent keep a MacBook with Apple silicon awake with the lid closed while long tasks run, through the keepmacawake command of the Keep Mac Awake app.",
+  "hooks": "./hooks/cursor-hooks.json",
+  "license": "MIT"
+}
