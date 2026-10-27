@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3
+
+- Install in the menu bar panel works. In 1.0.1 and 1.0.2 it stopped after downloading and checking the new version with "Keep Mac Awake is quitting.", because the last check before the administrator dialog always answered that. Users of those versions install 1.0.3 once from keepmacawake.com or with `curl -fsSL https://keepmacawake.com/install.sh | sh`.
+- A failed install shows its reason in the update row, with Try Again, instead of a separate warning above it. The password dialog and the row say that Keep Mac Awake restarts by itself after installing.
+
 ## 1.0.2
 
 - `keepmacawake status --agent` reports only the app's state: whether a session runs and its time left, the trial, a newer version (installed with Install in the menu bar panel). It no longer prints commands, the price or an install command.
