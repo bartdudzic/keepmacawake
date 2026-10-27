@@ -2,6 +2,14 @@
   "name": "keep-mac-awake",
   "version": "1.0.0",
   "description": "Lets your agent keep a MacBook with Apple silicon awake with the lid closed while long tasks run, through the keepmacawake command of the Keep Mac Awake app.",
-  "hooks": "./hooks/cursor-hooks.json",
-  "license": "MIT"
+  "author": {
+    "name": "Bart Dudzic",
+    "email": "hi@keepmacawake.com"
+  },
+  "homepage": "https://keepmacawake.com/agents.md",
+  "repository": "https://github.com/bartdudzic/keepmacawake",
+  "license": "MIT",
+  "keywords": ["macos", "macbook", "lid-closed", "keep-awake", "sleep", "long-running-tasks", "remote-control"],
+  "logo": ".claude-plugin/icon.png",
+  "hooks": "./hooks/cursor-hooks.json"
 }

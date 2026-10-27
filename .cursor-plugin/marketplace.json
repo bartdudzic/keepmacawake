@@ -4,7 +4,15 @@
     "name": "Bart Dudzic",
     "email": "hi@keepmacawake.com"
   },
+  "metadata": {
+    "description": "Keep Mac Awake for AI agents: keep a MacBook awake with the lid closed while long tasks run."
+  },
   "plugins": [
-    { "name": "keep-mac-awake", "source": "./plugins/keep-mac-awake" }
+    {
+      "name": "keep-mac-awake",
+      "source": "./plugins/keep-mac-awake",
+      "description": "Lets your agent keep a MacBook awake with the lid closed while long tasks run, through the Keep Mac Awake app.",
+      "category": "productivity"
+    }
   ]
 }
