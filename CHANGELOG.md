@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- `keepmacawake status --agent` reports only the app's state: whether a session runs and its time left, the trial, a newer version (installed with Install in the menu bar panel). It no longer prints commands, the price or an install command.
+- `keepmacawake capabilities` says updates are installed with Install in the menu bar panel.
+
 ## 1.0.1
 
 First public release.

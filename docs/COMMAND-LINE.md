@@ -9,7 +9,7 @@ The session belongs to a per-user background service (the coordinator). The tool
 | Command | What it does |
 | --- | --- |
 | `keepmacawake status` | Shows the session state. |
-| `keepmacawake status --agent` | The same in a few plain lines for an AI agent's context, for example from a session-start hook: whether a session runs and its time left, a newer version, and the trial. State only from the release after 1.0.1: no commands, no price and no install steps; the agent's rules are in the keepmacawake skill. The plugin's hook reads `status --json` instead. |
+| `keepmacawake status --agent` | The same in a few plain lines for an AI agent's context, for example from a session-start hook: whether a session runs and its time left, a newer version, and the trial. State only since 1.0.2: no commands, no price and no install steps; the agent's rules are in the keepmacawake skill. The plugin's hook reads `status --json` instead. |
 | `keepmacawake start --unlimited` | Starts a session without a time limit. |
 | `keepmacawake start --hours N` | Starts a session of N whole hours, 1 to 168. |
 | `keepmacawake stop` | Ends the session and restores the sleep setting. |
