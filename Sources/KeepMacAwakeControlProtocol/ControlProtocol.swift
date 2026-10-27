@@ -1,7 +1,7 @@
 import Foundation
 
 public enum ControlConstants {
-    public static let version = "1.2"
+    public static let version = "1.3"
     public static let serviceName = "com.keepmacawake.Helper"
     public static let watchdogName = "com.keepmacawake.Watchdog"
     public static let installationDirectory = "/Library/PrivilegedHelperTools/com.keepmacawake"
@@ -38,6 +38,14 @@ public enum ControlConstants {
     public static let sessionHours = 1...168
     public static let maximumSessionSeconds = sessionHours.upperBound * 3600
     public static let batteryThresholdRange = 1...100
+    /// The helper copies an update package here before it checks and installs it; only root can read it.
+    public static let updateDirectory = stateDirectory + "/update"
+    public static let helperExecutable = installationDirectory + "/KeepMacAwakeHelper"
+    /// The team whose Developer ID Installer certificate signs every release package.
+    public static let releaseTeamID = "3X35AKH8DH"
+    public static let maximumUpdateBytes = 64 * 1024 * 1024
+    /// Held by the install process while Installer runs; Start and other installs wait for it.
+    public static let updateLockPath = stateDirectory + "/update.lock"
 
     /// Zero explicitly requests a session without a time limit, never an infinite lease.
     public static func isSupportedDuration(_ seconds: Int) -> Bool {
@@ -47,6 +55,19 @@ public enum ControlConstants {
 
 @objc public protocol KeepMacAwakeServiceProtocol {
     func request(_ data: Data, withReply reply: @escaping (Data) -> Void)
+    /// An update package, as an open file and nothing else: the helper copies it, checks the
+    /// copy and installs it. The reply is an encoded `UpdateInstallReply`.
+    func installUpdate(_ package: FileHandle, withReply reply: @escaping (Data) -> Void)
+}
+
+/// The helper's answer to `installUpdate`.
+public struct UpdateInstallReply: Codable, Sendable, Equatable {
+    public var accepted: Bool
+    public var message: String
+    public var version: String
+    public init(accepted: Bool, message: String) {
+        self.accepted = accepted; self.message = message; self.version = ControlConstants.version
+    }
 }
 
 public struct ControlRequest: Codable, Sendable {
@@ -122,10 +143,14 @@ public struct InstallationTrust: Codable, Sendable {
     public let appRequirement: String
     public let coordinatorRequirement: String
     public let cliRequirement: String
+    /// The installed release version, written by the installer next to the requirements.
+    /// The helper refuses an update that is not newer; only root can write this file.
+    public let version: String?
     public init(helperRequirement: String, appRequirement: String,
-                coordinatorRequirement: String, cliRequirement: String) {
+                coordinatorRequirement: String, cliRequirement: String, version: String? = nil) {
         self.helperRequirement = helperRequirement; self.appRequirement = appRequirement
         self.coordinatorRequirement = coordinatorRequirement; self.cliRequirement = cliRequirement
+        self.version = version
     }
 
     /// True only for `identifier "<identifier>" and cdhash H"<40 hex>"`.

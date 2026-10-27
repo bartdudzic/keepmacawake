@@ -114,6 +114,9 @@ final class ServiceRuntime: NSObject, NSXPCListenerDelegate {
     /// Only the controller keeps the first-session record.
     private var firstSession = FirstSessionTracker(stored: nil)
     private lazy var policy = SessionPolicy(backend: backend, snapshot: { [unowned self] in self.safetySnapshot() })
+    /// Copying and checking an update package run here, so status and Start never wait on them.
+    private let updateQueue = DispatchQueue(label: "com.keepmacawake.service.update")
+    private var preparingUpdate = false
 
     init(mode: Mode) throws {
         self.mode = mode
@@ -200,7 +203,9 @@ final class ServiceRuntime: NSObject, NSXPCListenerDelegate {
                 status = ControlStatus(phase: .failed, message: "The request is too large.")
             } else if let console = consoleUserID(), connection.effectiveUserIdentifier == console,
                       let request = try? JSONDecoder().decode(ControlRequest.self, from: data) {
-                if self.ready && self.recovery == nil {
+                if request.kind == .start, UpdateInstall.isInstalling() {
+                    status = ControlStatus(phase: .failed, message: "Keep Mac Awake is updating. Try again in a minute.")
+                } else if self.ready && self.recovery == nil {
                     status = self.policy.handle(request, connection: identifier, user: console, confirmWatchdog: {
                         // The watchdog reads the policy's state after this request's tick, for
                         // example an expired session already ended, not the timer's older one.
@@ -234,6 +239,76 @@ final class ServiceRuntime: NSObject, NSXPCListenerDelegate {
             // Encoding this closed Codable model cannot fail for normal finite values.
             reply((try? JSONEncoder().encode(answer)) ?? Data())
         }
+    }
+
+    /// An update package from the coordinator, as an open file. Accepted only with no
+    /// session, nothing to restore and no other update in progress. The copy and its checks
+    /// run off the service queue; the session state is checked again before Installer
+    /// starts, in a process of its own that holds the update lock.
+    func installUpdate(_ package: FileHandle, connection: NSXPCConnection, reply: @escaping (Data) -> Void) {
+        func answer(_ accepted: Bool, _ message: String) {
+            reply((try? JSONEncoder().encode(UpdateInstallReply(accepted: accepted, message: message))) ?? Data())
+        }
+        queue.async {
+            guard self.mode == .controller, let console = consoleUserID(), connection.effectiveUserIdentifier == console else {
+                try? package.close()
+                return answer(false, "The request is not from the console user.")
+            }
+            self.supervise()
+            if let refusal = self.updateRefusal() { try? package.close(); return answer(false, refusal) }
+            guard let installed = self.trust.version else {
+                try? package.close()
+                return answer(false, "The installed version is unknown. Install the new version with its installer package.")
+            }
+            self.preparingUpdate = true
+            self.updateQueue.async {
+                let prepared: Result<(String, String), ServiceError>
+                do {
+                    let copy = try UpdateInstall.copy(package)
+                    switch UpdatePackageCheck.verify(package: copy, installedVersion: installed,
+                                                     systemVersion: UpdateInstall.systemVersion,
+                                                     run: { UpdateInstall.run($0, $1) }, distribution: UpdateInstall.distribution) {
+                    case .success(let version): prepared = .success((copy, version))
+                    case .failure(let refusal):
+                        UpdateInstall.removePackage(copy)
+                        prepared = .failure(.failed(refusal.message))
+                    }
+                } catch let error as ServiceError {
+                    prepared = .failure(error)
+                } catch {
+                    prepared = .failure(.failed("The update package could not be read."))
+                }
+                try? package.close()
+                self.queue.async {
+                    self.preparingUpdate = false
+                    switch prepared {
+                    case .failure(let error):
+                        answer(false, error.localizedDescription)
+                    case .success(let (copy, version)):
+                        // A session may have started while the copy was checked.
+                        self.supervise()
+                        if let refusal = self.updateRefusal() { UpdateInstall.removePackage(copy); return answer(false, refusal) }
+                        do {
+                            let lock = try UpdateInstall.takeLock()
+                            defer { close(lock) }
+                            try UpdateInstall.startDetached(copy, lock: lock)
+                            answer(true, "Installing Keep Mac Awake \(version). It restarts by itself in a moment.")
+                        } catch {
+                            UpdateInstall.removePackage(copy)
+                            answer(false, error.localizedDescription)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func updateRefusal() -> String? {
+        UpdatePackageCheck.requestRefusal(ready: ready, recovering: recovery != nil,
+                                          sessionActive: policy.sessionIdentifier != nil,
+                                          restorationNeeded: policy.requiresRestoration,
+                                          journalExists: FileManager.default.fileExists(atPath: UpdateInstall.journalPath),
+                                          installing: UpdateInstall.isInstalling(), preparing: preparingUpdate)
     }
 
     private func registerWakes() {
@@ -457,5 +532,9 @@ private final class ConnectionEndpoint: NSObject, KeepMacAwakeServiceProtocol {
     func request(_ data: Data, withReply reply: @escaping (Data) -> Void) {
         guard let runtime, let connection else { reply(Data()); return }
         runtime.request(data, connection: connection, identifier: identifier, reply: reply)
+    }
+    func installUpdate(_ package: FileHandle, withReply reply: @escaping (Data) -> Void) {
+        guard let runtime, let connection else { reply(Data()); return }
+        runtime.installUpdate(package, connection: connection, reply: reply)
     }
 }

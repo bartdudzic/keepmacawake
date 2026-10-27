@@ -46,5 +46,7 @@ if [ -f "$TASK_RELAUNCH" ] && [ ! -L "$TASK_RELAUNCH" ]; then
             echo 'Open Keep Mac Awake from Applications to see its panel again.' >&2
     fi
 fi
+# An update the system service installed leaves its checked copy here.
+/bin/rm -rf '/Library/Application Support/KeepMacAwake/update'
 # Loading these services never starts a session. The user must choose Turn On.
 exit 0

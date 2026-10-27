@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+
+- Updates install by themselves, with no password and no click, when the daily check finds a newer version and no session runs; the app opens again and the panel says it was updated. Install in the panel does it at once, also with no password. The system service checks the package itself (Developer ID of the Keep Mac Awake developer, Apple's notarization, a newer version, never the uninstaller) before installing it, and refuses Start while it installs. `keepmacawake config set --update-check off` turns it off.
+
 ## 1.0.3
 
 - Install in the menu bar panel works. In 1.0.1 and 1.0.2 it stopped after downloading and checking the new version with "Keep Mac Awake is quitting.", because the last check before the administrator dialog always answered that. Users of those versions install 1.0.3 once from keepmacawake.com or with `curl -fsSL https://keepmacawake.com/install.sh | sh`.

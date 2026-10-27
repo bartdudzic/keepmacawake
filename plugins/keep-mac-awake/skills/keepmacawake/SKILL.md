@@ -63,7 +63,7 @@ Only with the user's agreement, and only while they are at the Mac, because the 
 
 ## Updates
 
-The app checks for a new version once a day. When `update.available_version` in `keepmacawake status --json` is not null, tell the user once in the conversation that they can install it with **Install** in the menu bar panel, which checks the download before installing. Installing ends a running session. Do not install updates yourself, and leave the daily check (`config.update_check`) to the user.
+The app checks for a new version once a day. When `update.available_version` in `keepmacawake status --json` is not null, the app installs it by itself once no session runs, and restarts; the user can also choose **Install** in the menu bar panel. A session you start keeps it waiting. Do not install updates yourself, and leave the daily check (`config.update_check`) to the user.
 
 ## Limits
 

@@ -20,7 +20,7 @@ The session belongs to a per-user background service (the coordinator). The tool
 | `keepmacawake app quit` | Ends the session, then quits the menu bar app. |
 | `keepmacawake buy` | Opens the purchase page for this Mac in the browser and prints the link. |
 | `keepmacawake restore` | Restores a purchase made for this Mac (one request to `keepmacawake.com`). |
-| `keepmacawake check-updates` | Asks `keepmacawake.com` for the latest version now, also with the daily check off, and says whether a newer one is available. It installs nothing. |
+| `keepmacawake check-updates` | Asks `keepmacawake.com` for the latest version now, also with the daily check off, and says whether a newer one is available. With the daily check on, a newer version then installs by itself when no session runs, as after the daily check. |
 | `keepmacawake capabilities --json` | Describes this contract: commands, options, phases, access states and exit codes. |
 
 During the 3-day trial, counted from the first session on the Mac, a session lasts at most 8 hours; `start --unlimited` or `--hours` above 8 exits with 4 and `purchase_required` without touching anything, and so does any `start` after the trial. A running session is never ended by the trial. With `purchase_required` the JSON error says why (`reason`), carries a message addressed to the person at the Mac with the price and the steps (`user_message`), and lists the commands that may follow (`next_steps`), so an agent can pass it on without guessing.
@@ -50,7 +50,7 @@ With `--json`, stdout carries exactly one JSON object on one line; diagnostics g
 | `config.battery_available` | False on a Mac without a built-in battery: `config.battery` is then always `ac-only` and the battery settings cannot be changed |
 | `config.update_check` | `daily` (the default) or `off` |
 | `update.current_version`, `update.available_version` | This version, and a newer one found by the last update check, or null |
-| `update.install_command` | With a newer version: `curl -fsSL https://keepmacawake.com/install.sh \| sh`, which installs it after the administrator password and ends a running session; null otherwise. `update` itself is null from a build without a release version |
+| `update.install_command` | With a newer version: `curl -fsSL https://keepmacawake.com/install.sh \| sh`, for a person to run in Terminal; it installs it after the administrator password and ends a running session. Since 1.0.4 the app installs a newer version by itself when no session runs. Null otherwise. `update` itself is null from a build without a release version |
 | `access.state` | `purchased`, `trial` or `trialEnded` |
 | `access.trial_seconds_left`, `access.trial_started` | Time left in the trial (its full length before the first session); null when purchased |
 | `access.max_hours` | The longest session a `start` may ask for; null without a limit |

@@ -2,7 +2,11 @@ import Foundation
 import Darwin
 import KeepMacAwakeControlProtocol
 
-// There is no default mode, user-supplied path, shell command, or activation CLI.
+// There is no default mode, shell command, or activation CLI. The only argument besides a
+// mode is the update package path, which install mode accepts only inside its own directory.
+if CommandLine.arguments.count == 3, CommandLine.arguments[1] == "--install-update", geteuid() == 0 {
+    exit(UpdateInstall.installMode(CommandLine.arguments[2]))
+}
 guard CommandLine.arguments.count == 2, geteuid() == 0 else {
     fputs("KeepMacAwakeHelper: requires root and exactly one fixed service mode.\n", stderr)
     exit(64)
