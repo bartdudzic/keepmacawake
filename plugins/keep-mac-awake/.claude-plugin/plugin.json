@@ -10,6 +10,7 @@
   },
   "homepage": "https://keepmacawake.com",
   "repository": "https://github.com/bartdudzic/keepmacawake",
+  "documentationUrl": "https://github.com/bartdudzic/keepmacawake/blob/main/plugins/keep-mac-awake/README.md",
   "license": "MIT",
   "keywords": ["macos", "macbook", "lid-closed", "keep-awake", "sleep", "long-running-tasks", "remote-control"],
   "privacyPolicyUrl": "https://keepmacawake.com/privacy.md",
