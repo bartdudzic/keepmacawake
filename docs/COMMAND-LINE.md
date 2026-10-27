@@ -56,7 +56,7 @@ With `--json`, stdout carries exactly one JSON object on one line; diagnostics g
 | `access.max_hours` | The longest session a `start` may ask for; null without a limit |
 | `access.mac_id` | This Mac's ID, used by `buy` and `restore` and for support |
 | `access.trial_ends_at` | When a running trial ends, in UTC (for example `2026-10-24T09:00:00Z`); null before the first session and once purchased |
-| `access.purchase` | Until this Mac is unlocked: `price` (`9 USD plus tax, one time, for this Mac`), `amount`, `currency`, `url` (the purchase page for this Mac), `buy_command`, `restore_command`; null once purchased |
+| `access.purchase` | Until this Mac is unlocked: `price` (`9 USD, tax included, one time, for this Mac`), `amount`, `currency`, `url` (the purchase page for this Mac), `buy_command`, `restore_command`; null once purchased |
 | `error.code`, `error.message`, `error.retryable` | Present when `result` is `error` |
 | `error.reason`, `error.user_message`, `error.next_steps` | With `purchase_required` only. `reason` is `trial_ended` or `trial_session_limit`; `user_message` is addressed to the person at the Mac and states the price; `next_steps` lists `command` and what it `does`: a start within the trial limit (only for `trial_session_limit`), `keepmacawake buy` and `keepmacawake restore` |
 

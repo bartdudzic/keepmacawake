@@ -2,7 +2,7 @@
 
 Keep Mac Awake keeps your MacBook awake with the lid closed, without an external display or keyboard, so long jobs, downloads and AI agents keep running. You start each session yourself, from the menu bar or from Terminal; a timed session ends on its own.
 
-**9 USD plus applicable tax, a one-time payment per Mac.** No subscription. Try it free for 3 days, with no card and no account; during the trial a session lasts up to 8 hours. See [Buying](#buying).
+**9 USD, tax included, a one-time payment per Mac.** No subscription. Try it free for 3 days, with no card and no account; during the trial a session lasts up to 8 hours. See [Buying](#buying).
 
 ## What it does
 
@@ -31,11 +31,11 @@ A Mac that works with its lid closed still produces heat. Do not run it in a clo
 
 ## Install
 
-1. Download `KeepMacAwake-1.0.4-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
+1. Download `KeepMacAwake-1.0.5-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
 2. Optional: check the download in Terminal. The result must match the `.sha256` file of the release.
 
    ```sh
-   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.4-arm64.pkg
+   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.5-arm64.pkg
    ```
 
 3. Open the package and follow the steps. Then click the icon in the menu bar and press the power button.
@@ -58,7 +58,7 @@ Download the new package and open it, or run the install command again. The pack
 
 ## Uninstall
 
-Open `KeepMacAwake-Uninstall-1.0.4-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
+Open `KeepMacAwake-Uninstall-1.0.5-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
 
 ## Command line
 
@@ -83,7 +83,7 @@ npx skills add bartdudzic/keepmacawake -g                                     # 
 ## Buying
 
 1. Install Keep Mac Awake and use it. The 3-day trial starts with your first session; sessions last up to 8 hours.
-2. When you are ready, choose **Buy for $9** in the panel (or run `keepmacawake buy`). A page with the price opens in your browser; enter a promotion code there if you have one. Then Stripe's checkout opens: Stripe sells it as the reseller and adds the tax that applies where you live. A code that makes it free needs no card.
+2. When you are ready, choose **Buy for $9** in the panel (or run `keepmacawake buy`). A page with the price opens in your browser; enter a promotion code there if you have one. Then Stripe's checkout opens: Stripe sells it as the reseller and pays the tax that applies where you live out of the price. A code that makes it free needs no card.
 3. After paying, the page opens Keep Mac Awake and unlocks this Mac. There is no key to type. The purchase works offline from then on.
 
 - **Reinstalled, or a second user account on the same Mac?** Choose **Restore purchase**.

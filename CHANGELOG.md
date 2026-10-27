@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.5
+
+- The price is stated with tax included: 9 USD, tax included, one time, for this Mac, in the menu bar panel and in `keepmacawake` (its text, its JSON `price` and the trial messages). The checkout has charged 9 USD with tax included since 2026-10-27.
+
 ## 1.0.4
 
 - Updates install by themselves, with no password and no click, when the daily check finds a newer version and no session runs; the app opens again and the panel says it was updated. Install in the panel does it at once, also with no password. The system service checks the package itself (Developer ID of the Keep Mac Awake developer, Apple's notarization, a newer version, never the uninstaller) before installing it, and refuses Start while it installs. `keepmacawake config set --update-check off` turns it off.
