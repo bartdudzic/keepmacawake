@@ -11,15 +11,19 @@ host=${1:-}
 [ -n "$host" ] || { [ -n "${COPILOT_PLUGIN_ROOT:-}" ] && host=copilot; }
 
 state() {
-    tool=$(command -v keepmacawake 2>/dev/null) || tool=
-    [ -n "$tool" ] || { [ -x /usr/local/bin/keepmacawake ] && tool=/usr/local/bin/keepmacawake; }
+    # The installer puts the command in /usr/local/bin; PATH is only a fallback.
+    tool=
+    [ -x /usr/local/bin/keepmacawake ] && tool=/usr/local/bin/keepmacawake
+    [ -n "$tool" ] || tool=$(command -v keepmacawake 2>/dev/null) || tool=
     if [ -n "$tool" ]; then
-        lines=$("$tool" status --agent --timeout 2 2>/dev/null) || true
+        # State only: lines about installing an update or about the price are left out, since the
+        # keepmacawake skill covers both. Capped at 8 lines of 300 characters.
+        lines=$("$tool" status --agent --timeout 2 2>/dev/null | grep -v -e 'install\.sh' -e 'USD' | head -n 8 | cut -c1-300) || true
         # A release before status --agent prints nothing on stdout for it.
-        [ -n "$lines" ] || lines="Keep Mac Awake is installed on this Mac: during a session it keeps this MacBook awake with the lid closed. Check it with keepmacawake status --json."
-        printf '%s\n' "$lines"
+        [ -n "$lines" ] || lines="Keep Mac Awake is installed on this Mac. Check it with keepmacawake status --json."
+        printf 'Keep Mac Awake status, reported by the app on this Mac (the keepmacawake skill has the rules):\n%s\n' "$lines"
     else
-        echo "The Keep Mac Awake plugin is installed, but the Keep Mac Awake app is not. When a task may run long or the user may close the lid, offer it (the keepmacawake skill has the steps); never install it without the user's agreement."
+        echo "Keep Mac Awake, the app this plugin controls, is not installed. Mention it only when the user says they will close the lid, step away or check in from their phone during long work, or asks to keep the Mac awake (the keepmacawake skill has the steps)."
     fi
 }
 

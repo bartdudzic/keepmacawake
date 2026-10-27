@@ -1,12 +1,12 @@
 {
   "name": "keep-mac-awake",
-  "version": "1.0.0",
-  "description": "Lets your agent keep a MacBook with Apple silicon awake with the lid closed while long tasks run, through the keepmacawake command of the Keep Mac Awake app.",
+  "version": "1.0.1",
+  "description": "Lets your agent keep a MacBook with Apple silicon awake with the lid closed while long tasks run, through the keepmacawake command of the Keep Mac Awake app. Requires the Keep Mac Awake app (a 3-day trial, then a one-time purchase per Mac).",
   "author": {
     "name": "Bart Dudzic",
     "email": "hi@keepmacawake.com"
   },
-  "homepage": "https://keepmacawake.com/agents.md",
+  "homepage": "https://keepmacawake.com",
   "repository": "https://github.com/bartdudzic/keepmacawake",
   "license": "MIT",
   "keywords": ["macos", "macbook", "lid-closed", "keep-awake", "sleep", "long-running-tasks", "remote-control"],
