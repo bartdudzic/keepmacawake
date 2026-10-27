@@ -5,16 +5,17 @@ This plugin teaches an AI agent to use Keep Mac Awake, a macOS app that keeps a 
 It has two parts:
 
 - **A skill** (`skills/keepmacawake/SKILL.md`, in the Agent Skills format): when to start and stop a session, what to ask you first, and what to do when the command refuses.
-- **A session-start hook** (`hooks/session-start.sh`): when an agent session begins, it runs `keepmacawake status --agent` once and adds its few lines to the agent's context, so the agent knows the app is there without being reminded. It is read only: it makes no network connection and never starts, stops or changes anything.
+- **A session-start hook** (`hooks/session-start.sh`): when an agent session begins, it runs `keepmacawake status --json` once and adds a few sentences of its own to the agent's context, built from a few fields of the reply (whether a session runs, its time left, the trial, a newer version), so the agent knows the app is there without being reminded. It never passes on the app's text or the Mac ID. It is read only: it makes no network connection and never starts, stops or changes anything.
 
 The agent starts timed sessions on its own and tells you in one line. It always asks before a session without a time limit, battery use, installing the app and buying.
 
 ## What it runs
 
-- **The hook** runs `keepmacawake status --agent` on this Mac, with a 2-second timeout, and nothing else.
+- **The hook** runs `keepmacawake status --json` on this Mac, with a 2-second timeout, and reads its fields with `plutil`; nothing else.
 - **The skill** has the agent run the `keepmacawake` command (`status`, `start`, `stop`, `config`, `buy`, `restore`, `capabilities`), and `sysctl` and `sw_vers` to check that the Mac fits. `keepmacawake buy` opens the purchase page on keepmacawake.com in your browser, and `keepmacawake restore`, when you ask for it, sends this Mac's ID to keepmacawake.com to find an earlier purchase. When a task you asked for needs the app and it is missing, the agent offers it once and gives you the download link; you download and open the installer yourself.
 - The plugin never downloads or runs an installer or a script, never uses `sudo` and never pays.
-- It works where the agent's commands run on your Mac itself (Claude Code, Codex, Cursor, Copilot CLI). In a cloud or virtual machine environment the hook stays silent and the agent says the app is out of reach.
+- It works where the agent's commands run on your Mac itself (Claude Code, Codex, Cursor, Copilot CLI). On anything else, such as a cloud container, the hook stays silent and the agent says the app is out of reach.
+- Codex runs commands in a sandbox that cannot reach the app's background service, and so do Cursor and Claude Code when sandboxing is on. The agent then asks to run `keepmacawake` outside the sandbox; approve it.
 
 ## Examples
 
@@ -54,7 +55,7 @@ The plugin needs the Keep Mac Awake app (any Mac with Apple silicon and macOS 26
 
 ## Privacy
 
-The plugin itself sends nothing anywhere; of the commands it runs, only `keepmacawake restore` goes online, with this Mac's ID, and `keepmacawake buy` opens a page in your browser, both only when you ask. keepmacawake.com keeps no logs of these requests. The hook's lines become part of the agent's conversation, so the agent's provider receives them: whether a session runs, its time left and the trial's time left. They do not include this Mac's ID. When the agent runs `keepmacawake status --json`, its output also enters the conversation; it includes the Mac ID that a purchase is tied to (`access.mac_id`). The app's own data use is in its [privacy description](https://keepmacawake.com/privacy.md).
+The plugin itself sends nothing anywhere; of the commands it runs, only `keepmacawake restore` goes online, with this Mac's ID, and `keepmacawake buy` opens a page in your browser, both only when you ask. keepmacawake.com stores nothing about these requests: it looks the Mac ID up with Stripe, and its host (Cloudflare) and Stripe keep request records under their own policies. The hook's lines become part of the agent's conversation, so the agent's provider receives them: whether a session runs, its time left, the trial's time left and a newer version. They do not include this Mac's ID. When the agent runs `keepmacawake status --json`, its output also enters the conversation; it includes the Mac ID that a purchase is tied to (`access.mac_id`). The app's own data use is in its [privacy description](https://keepmacawake.com/privacy.md).
 
 ## Troubleshooting
 

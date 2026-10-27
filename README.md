@@ -42,11 +42,13 @@ A Mac that works with its lid closed still produces heat. Do not run it in a clo
 
 The packages are signed with Developer ID and notarized by Apple.
 
-### From Terminal or an AI agent
+### From Terminal
 
 ```sh
 curl -fsSL https://keepmacawake.com/install.sh | sh
 ```
+
+An AI agent does not run this itself: it gives you the download link and leaves the installer to you.
 
 The [script](https://keepmacawake.com/install.sh) downloads the latest package from the releases, checks its SHA-256, the Developer ID signature and Apple's notarization, and runs macOS Installer. macOS asks for an administrator password once: in Terminal, or in a system dialog when an AI agent runs the command. It refuses while a session runs, and installing turns nothing on. Options: `--version X.Y.Z`, `--dry-run` (download and check only) and `--uninstall`, passed as `sh -s -- --uninstall`.
 

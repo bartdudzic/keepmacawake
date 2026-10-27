@@ -41,7 +41,7 @@ Independently of the app, macOS may check the certificate status online when ver
 
 ## AI agents
 
-The Keep Mac Awake plugin and skill for AI agents send nothing anywhere. An agent runs `keepmacawake` on this Mac as a person would in Terminal. The plugin's hook runs `keepmacawake status --agent` when an agent session begins and adds its few lines to the agent's conversation, so the agent's provider receives them with the rest of the conversation: whether a session runs and its time left, the trial's time left and the price. They do not contain the Mac ID; `keepmacawake status --json`, which an agent may also run, does. The app and the command never read the agent's files, settings or prompts.
+The Keep Mac Awake plugin and skill for AI agents send nothing anywhere. An agent runs `keepmacawake` on this Mac as a person would in Terminal. The plugin's hook runs `keepmacawake status --json` when an agent session begins and adds a few sentences of its own to the agent's conversation, so the agent's provider receives them with the rest of the conversation: whether a session runs and its time left, the trial's time left, and a newer version. They do not contain the Mac ID; `keepmacawake status --json`, which an agent may also run, does. The app and the command never read the agent's files, settings or prompts.
 
 ## What the app does not do
 

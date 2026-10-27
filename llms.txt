@@ -1,16 +1,11 @@
 # Keep Mac Awake
 
-> A macOS menu bar app and command that keep an Apple silicon MacBook awake with the lid closed, for explicit sessions the user starts. AC power by default, optional battery use above a threshold, display off with the lid closed, a root watchdog that restores the sleep setting after failures. No data collection; the only network request is Restore purchase, when the user chooses it. macOS 26 or later. Free for 3 days, then 9 USD plus tax, one time, per Mac.
+> A macOS menu bar app and command that keep an Apple silicon MacBook awake with the lid closed, for explicit sessions the user starts. AC power by default, optional battery use above a threshold, display off with the lid closed, a root watchdog that restores the sleep setting after failures. No data collection; on its own it goes online only for a daily update check that carries nothing about the Mac, and Restore purchase and Install only when the user chooses them. macOS 26 or later. Free for 3 days, then 9 USD plus tax, one time, per Mac.
 
-## Install from an AI agent
+## Install
 
-- Install or update: `curl -fsSL https://keepmacawake.com/install.sh | sh`
-- Uninstall: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`
-- Check without installing: append `-s -- --dry-run`; a specific release: `-s -- --version X.Y.Z`
-- The script downloads the package from the GitHub release and installs it only after its SHA-256, the Developer ID signature and Apple's notarization check out.
-- macOS asks the person at the Mac for an administrator password once, in a system dialog; tell them to expect it. There is no silent install.
-- Run it as the logged-in user, never with sudo. It refuses while a session runs (exit code 5), because installing or removing ends the session; ask the person before running `keepmacawake stop`.
-- Exit codes: 0 done, 1 failed, 2 invalid arguments, 3 this Mac is not supported (Apple silicon and macOS 26 or later only), 4 action needed from the person (the dialog was cancelled or could not be shown), 5 a session is running.
+- An AI agent asks the person first, gives them the download link, https://keepmacawake.com/download (the installer package of the latest release), and asks them to open it. It does not download or run the installer itself. macOS asks the person for an administrator password once; there is no silent install.
+- In their own Terminal, people can also run `curl -fsSL https://keepmacawake.com/install.sh | sh` to install or update, and append `-s -- --uninstall` to remove it, `-s -- --dry-run` to check without installing, or `-s -- --version X.Y.Z` for a specific release. The script installs a package only after its SHA-256, the Developer ID signature and Apple's notarization check out. It refuses while a session runs (exit code 5). Exit codes: 0 done, 1 failed, 2 invalid arguments, 3 this Mac is not supported (Apple silicon and macOS 26 or later only), 4 action needed from the person, 5 a session is running.
 - Nothing is turned on by installing. Afterwards `keepmacawake status --json` confirms the background service answers.
 
 ## Use from an AI agent
