@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.0
+## 1.0.1
 
 First public release.
 
@@ -13,3 +13,8 @@ First public release.
 - Updates from the panel: a daily check shows a newer version with Install, which downloads it, checks its signature and notarization, asks for the administrator password and opens the new app. Check for Updates… checks at once; `keepmacawake config set --update-check off` turns the daily check off.
 - On its own the app goes online only for the daily update check, which carries nothing about the Mac; Restore purchase and Install only when you choose them; no data collection, no logs.
 - Install and uninstall packages, signed with Developer ID and notarized.
+- macOS lists the helper, the watchdog and the coordinator under Keep Mac Awake, with its icon, in Login Items & Extensions and in its background activity notice.
+
+## 1.0.0
+
+Withdrawn on its release day, before anyone downloaded it: macOS named its background services after the developer certificate instead of Keep Mac Awake.

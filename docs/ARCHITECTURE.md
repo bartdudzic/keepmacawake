@@ -15,7 +15,7 @@ This document describes version 1.0 as the code in this repository implements it
 
 One executable serves all four root modes. It exits unless it runs as root with exactly one of these fixed arguments. No mode accepts a path, a command or a setting from a client.
 
-The LaunchDaemons ([Helper](../Packaging/LaunchDaemons/com.keepmacawake.Helper.plist), [Watchdog](../Packaging/LaunchDaemons/com.keepmacawake.Watchdog.plist)) set `RunAtLoad`, `KeepAlive`, `ThrottleInterval` 3, `ExitTimeOut` 5, `ProcessType` `Interactive` and `Umask` 63 (files are created without group or other access). Only the controller has a Mach service, `com.keepmacawake.Helper`. The watchdog has no XPC interface.
+The LaunchDaemons ([Helper](../Packaging/LaunchDaemons/com.keepmacawake.Helper.plist), [Watchdog](../Packaging/LaunchDaemons/com.keepmacawake.Watchdog.plist)) set `RunAtLoad`, `KeepAlive`, `ThrottleInterval` 3, `ExitTimeOut` 5, `ProcessType` `Interactive`, `Umask` 63 (files are created without group or other access) and `AssociatedBundleIdentifiers` `com.keepmacawake`, so macOS lists them under Keep Mac Awake in Login Items & Extensions rather than under the name on the signing certificate. Only the controller has a Mach service, `com.keepmacawake.Helper`. The watchdog has no XPC interface.
 
 Requests flow one way: app or command, then coordinator (XPC, per user), then controller (XPC, privileged Mach service). The controller and the watchdog talk only through heartbeat files, a shared lock file and two data-free Darwin notifications.
 

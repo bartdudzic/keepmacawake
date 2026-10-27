@@ -31,11 +31,11 @@ A Mac that works with its lid closed still produces heat. Do not run it in a clo
 
 ## Install
 
-1. Download `KeepMacAwake-1.0.0-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
+1. Download `KeepMacAwake-1.0.1-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
 2. Optional: check the download in Terminal. The result must match the `.sha256` file of the release.
 
    ```sh
-   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.0-arm64.pkg
+   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.1-arm64.pkg
    ```
 
 3. Open the package and follow the steps. Then click the icon in the menu bar and press the power button.
@@ -56,7 +56,7 @@ Download the new package and open it, or run the install command again. The pack
 
 ## Uninstall
 
-Open `KeepMacAwake-Uninstall-1.0.0-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
+Open `KeepMacAwake-Uninstall-1.0.1-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
 
 ## Command line
 
