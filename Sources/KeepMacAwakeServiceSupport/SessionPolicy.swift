@@ -40,7 +40,10 @@ public final class SessionPolicy {
     public var needsSupervision: Bool { session != nil || restorationNeeded }
     /// What the controller tells the watchdog about this policy.
     public func controllerHeartbeat(generation: String, updatedAt: Double, ready: Bool) -> PeerHeartbeat {
-        let blocking = status.phase == .starting || status.phase == .active || status.phase == .restoring
+        // A session waiting for AC whose release is not confirmed may still hold the
+        // setting, so the watchdog gives it only the bounded release grace.
+        let blocking = status.phase == .starting || status.phase == .active || status.phase == .restoring ||
+            (session != nil && restorationNeeded)
         return PeerHeartbeat(generation: generation, updatedAt: updatedAt, ready: ready,
                              sessionUser: sessionUser, sessionID: sessionIdentifier, leaseDeadline: leaseDeadline,
                              sessionDeadline: sessionDeadline, blocking: blocking,
@@ -80,7 +83,10 @@ public final class SessionPolicy {
         self.backend = backend; self.snapshot = snapshot
     }
 
-    public func handle(_ request: ControlRequest, connection: UUID, user: UInt32) -> ControlStatus {
+    /// `confirmWatchdog` runs only for a Start that passed every other check, right
+    /// before the watchdog's own, so a refused Start never waits for the watchdog.
+    public func handle(_ request: ControlRequest, connection: UUID, user: UInt32,
+                       confirmWatchdog: () -> Bool = { true }) -> ControlStatus {
         // Expiration is evaluated BEFORE renewal, so an old token never revives intent.
         tick()
         let safety = snapshot()
@@ -104,18 +110,19 @@ public final class SessionPolicy {
             guard let duration = request.durationSeconds else {
                 return rejected("Unsupported session duration.")
             }
-            let decision = safety.powerDecision(minimumBatteryPercent: request.minimumBatteryPercent)
-            guard decision == .allowed else {
-                // AC-only treats an unknown source like missing AC; explain the actual cause.
-                let refusal = decision == .waitingForAC && safety.acPower == nil ? SessionPowerDecision.unknownPower : decision
-                return rejected(refusal.startRefusalMessage(minimumBatteryPercent: request.minimumBatteryPercent))
-            }
-            guard safety.now.isFinite, safety.watchdogFresh, let generation = safety.watchdogGeneration else {
-                return rejected("The supervising service is not ready. Try again in a moment.")
+            if let refusal = startRefusal(request, user: user, safety: safety) { return rejected(refusal) }
+            let notReady = "The supervising service is not ready. Try again in a moment."
+            guard confirmWatchdog() else { return rejected(notReady) }
+            // Waiting for the watchdog takes time, so everything is read again afterwards:
+            // a Start refused then never becomes a session, not even one ended at once.
+            let confirmed = snapshot()
+            if let refusal = startRefusal(request, user: user, safety: confirmed) { return rejected(refusal) }
+            guard confirmed.now.isFinite, confirmed.watchdogFresh, let generation = confirmed.watchdogGeneration else {
+                return rejected(notReady)
             }
             session = Session(id: UUID().uuidString, connection: connection, user: user,
-                              deadline: duration == 0 ? nil : safety.now + Double(duration), minimumBatteryPercent: request.minimumBatteryPercent,
-                              leaseDeadline: safety.now + ControlConstants.leaseSeconds,
+                              deadline: duration == 0 ? nil : confirmed.now + Double(duration), minimumBatteryPercent: request.minimumBatteryPercent,
+                              leaseDeadline: confirmed.now + ControlConstants.leaseSeconds,
                               watchdog: generation)
             endedSession = nil
             terminalReason = nil
@@ -147,7 +154,9 @@ public final class SessionPolicy {
     }
 
     public func tick() {
-        if restorationNeeded && !active {
+        // A session waiting for AC retries its own release below, so that a failed
+        // attempt keeps the intent instead of ending the session.
+        if restorationNeeded && !active && session == nil {
             guard restore() else { return }
         }
         guard let current = session else { return }
@@ -169,9 +178,17 @@ public final class SessionPolicy {
         }
         let decision = safety.powerDecision(minimumBatteryPercent: current.minimumBatteryPercent)
         if decision == .waitingForAC {
-            if active {
-                active = false
-                guard restore() else { return }
+            active = false
+            if restorationNeeded {
+                do {
+                    try backend.restore()
+                    restorationNeeded = false
+                } catch {
+                    // Retried every second. The heartbeat stays blocking meanwhile, so
+                    // the watchdog fences this controller once its release grace ends.
+                    publish(.waitingForAC, "Waiting for AC power. Turning off sleep prevention did not succeed yet. Retrying.", at: safety.now)
+                    return
+                }
             }
             publish(.waitingForAC, decision.message(minimumBatteryPercent: current.minimumBatteryPercent), at: safety.now)
             return
@@ -180,6 +197,10 @@ public final class SessionPolicy {
             cancel(decision.message(minimumBatteryPercent: current.minimumBatteryPercent), reason: decision.terminationReason ?? .unknown); return
         }
         if !active {
+            // AC returned before the release was confirmed: restore before a new activation.
+            if restorationNeeded {
+                guard restore() else { return }
+            }
             // A failed activation may already have created a recovery journal.
             restorationNeeded = true
             publish(.starting, "Turning on sleep prevention.", at: safety.now)
@@ -264,6 +285,18 @@ public final class SessionPolicy {
         status = ControlStatus(phase: phase, message: message, sessionID: session?.id,
                                remainingSeconds: session?.deadline.map { max(0, Int(ceil($0 - now))) },
                                minimumBatteryPercent: session?.minimumBatteryPercent, isUnlimited: sessionIsUnlimited)
+    }
+
+    /// Why the console user or the power conditions refuse this Start, if they do.
+    private func startRefusal(_ request: ControlRequest, user: UInt32, safety: SafetySnapshot) -> String? {
+        guard safety.consoleUser == user else { return "The request must come from the user logged in at the console." }
+        let decision = safety.powerDecision(minimumBatteryPercent: request.minimumBatteryPercent)
+        guard decision == .allowed else {
+            // AC-only treats an unknown source like missing AC; explain the actual cause.
+            let refusal = decision == .waitingForAC && safety.acPower == nil ? SessionPowerDecision.unknownPower : decision
+            return refusal.startRefusalMessage(minimumBatteryPercent: request.minimumBatteryPercent)
+        }
+        return nil
     }
 
     private func rejected(_ message: String) -> ControlStatus {

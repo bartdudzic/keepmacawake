@@ -61,7 +61,8 @@ fi
 /bin/rm -f "$TASK_INSTALL/KeepMacAwakeHelper" "$TASK_INSTALL/trust.json"
 /bin/rmdir "$TASK_INSTALL" 2>/dev/null || true
 # The recovery executable clears journal files. Remove only known service metadata.
-/bin/rm -f "$TASK_STATE/controller-heartbeat.json" "$TASK_STATE/watchdog-heartbeat.json" "$TASK_STATE/transaction.lock"
+/bin/rm -f "$TASK_STATE/controller-heartbeat.json" "$TASK_STATE/watchdog-heartbeat.json" "$TASK_STATE/transaction.lock" \
+    "$TASK_STATE/relaunch-app"
 /bin/rmdir "$TASK_STATE" 2>/dev/null || true
 for TASK_APP in ${TASK_REMOVE_APPS[@]+"${TASK_REMOVE_APPS[@]}"}; do
     /bin/rm -rf "$TASK_APP"

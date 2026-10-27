@@ -80,7 +80,7 @@ During a session the controller ticks every second. Each tick checks, in this or
 | Condition | AC-only session | Battery session with threshold N |
 | --- | --- | --- |
 | On AC | allowed | allowed |
-| On battery | pause (`waitingForAC`): the setting is restored, the session stays while renewed and resumes on AC | allowed while the battery is above N |
+| On battery | pause (`waitingForAC`): the setting is restored, the session stays while renewed and resumes on AC. A failed restore is retried every second and keeps the session, while the watchdog's 2 s release grace runs | allowed while the battery is above N |
 | Source unknown | pause, like no AC | ends (`powerUnknown`) |
 | Battery level unknown or invalid | not read | ends (`batteryUnknown`) |
 | Battery at or below N | not read | ends (`batteryThresholdReached`); AC does not resume it |
@@ -123,7 +123,7 @@ CFPreferences has no compare-and-swap. A tool that writes the same dictionary at
 
 ## Watchdog supervision and fencing
 
-**Heartbeats** (`PeerHeartbeat` in [PeerSupervision.swift](../Sources/KeepMacAwakeServiceSupport/PeerSupervision.swift)). Each service replaces its heartbeat file on every tick. The controller's heartbeat carries its generation, time, readiness, session user, session ID, lease and deadline, whether it is blocking (starting, active or restoring), the battery threshold, the no-limit flag, whether a restoration is pending, and the boot session ID. A heartbeat is fresh only if it comes from this boot (`kern.bootsessionuuid`), is ready, and is less than 8 s old and not in the future. Time is `mach_continuous_time`: it counts sleep and ignores wall clock changes.
+**Heartbeats** (`PeerHeartbeat` in [PeerSupervision.swift](../Sources/KeepMacAwakeServiceSupport/PeerSupervision.swift)). Each service replaces its heartbeat file on every tick. The controller's heartbeat carries its generation, time, readiness, session user, session ID, lease and deadline, whether it is blocking (starting, active, restoring, or waiting for AC before its restore is confirmed), the battery threshold, the no-limit flag, whether a restoration is pending, and the boot session ID. A heartbeat is fresh only if it comes from this boot (`kern.bootsessionuuid`), is ready, and is less than 8 s old and not in the future. Time is `mach_continuous_time`: it counts sleep and ignores wall clock changes.
 
 **What the watchdog does each tick** (`WatchdogAssessment` in [PeerSupervision.swift](../Sources/KeepMacAwakeServiceSupport/PeerSupervision.swift), `superviseOnce` in [ServiceRuntime.swift](../Sources/KeepMacAwakeHelper/ServiceRuntime.swift)):
 
@@ -135,7 +135,7 @@ CFPreferences has no compare-and-swap. A tool that writes the same dictionary at
 - An idle controller whose heartbeat stays unchanged for 180 s of awake time (measured on uptime, which pauses during sleep) is restarted.
 - After a recovery, the watchdog waits 8 s before fencing a fresh controller again, unless that controller reports a session user. This prevents a kill loop with launchd.
 
-**What the controller does about the watchdog.** While a session or a restoration exists, a watchdog heartbeat that is not fresh makes the controller fence the watchdog and restore (`watchdogUnavailable`). A watchdog with a new generation ends the session (`watchdogRestarted`). At startup the controller is not ready until it has restored any journal; if that keeps failing for 8 s and the watchdog is not fresh, it fences the watchdog.
+**What the controller does about the watchdog.** While a session or a restoration exists, a watchdog heartbeat that is not fresh makes the controller fence the watchdog and restore (`watchdogUnavailable`). A watchdog with a new generation ends the session (`watchdogRestarted`). At startup the controller is not ready until it has restored any journal; if that keeps failing for 8 s and the watchdog has stopped publishing, it fences the watchdog. A watchdog busy with its own recovery publishes `ready` false every second and is left alone, so a restore that keeps failing never turns into the two services fencing each other in turn.
 
 **Startup and SIGTERM.** A watchdog always fences the controller and runs recovery when it starts, and also on SIGTERM before it exits. A controller always restores before it becomes ready.
 
@@ -154,7 +154,7 @@ Idle supervision and session supervision differ only in rate (`SupervisionCadenc
 Two Darwin notifications coordinate the rates. They carry no data, grant nothing and never take the lock:
 
 - `com.keepmacawake.Watchdog.wake`: the controller posts it on each tick while it needs supervision. The watchdog switches to the fast rate.
-- `com.keepmacawake.Watchdog.start`: the controller posts it on Start, then waits up to 0.75 s (`watchdogWakeTimeoutSeconds`) for a watchdog heartbeat published after the wake. Without it, Start is refused before any change. The watchdog answers at most four times a second.
+- `com.keepmacawake.Watchdog.start`: the controller posts it on Start, once the Start has passed every other check, then waits up to 0.75 s (`watchdogWakeTimeoutSeconds`) for a watchdog heartbeat published after the wake. Without it, Start is refused before any change. The watchdog answers at most four times a second.
 
 Together with the 1.5 s kernel confirmation, the Start wait stays below the client's 3 s request timeout. If the watchdog cannot register for the notifications, it keeps the 1 s rate. Heartbeat files are written once per tick, so once a minute when idle.
 
@@ -175,9 +175,11 @@ Together with the 1.5 s kernel confirmation, the Start wait stays below the clie
 | `SleepDisabled` in `com.apple.PowerManagement` `SystemPowerSettings` | system | controller, recovery | turning on and restoring |
 | `/usr/local/bin/keepmacawake` (link to the command inside the app) | root | [postinstall](../Packaging/InstallScripts/postinstall) | install, only if the path is free |
 
-The core keeps no session history and the LaunchDaemons define no log file. The coordinator (closed source) stores the two battery preferences, the license after a purchase and a copy of the first-session record in the user's `com.keepmacawake` domain. See [privacy](PRIVACY.md).
+The core keeps no session history and the LaunchDaemons define no log file. The coordinator (closed source) stores the two battery preferences, the update check's setting and last answer, the license after a purchase and a copy of the first-session record in the user's `com.keepmacawake` domain. See [privacy](PRIVACY.md).
 
-**Install and removal.** [preinstall](../Packaging/InstallScripts/preinstall) refuses another volume and unsafe paths, asks the app to quit (SIGTERM, up to 10 s, then SIGKILL), stops the coordinator in every logged-in user session, kills and unloads both daemons, then runs `--recover`, which requires both daemons unloaded and restores from the journal. [postinstall](../Packaging/InstallScripts/postinstall) fixes ownership, validates the installation, loads the watchdog and then the controller, and loads the coordinator for the console user. Loading never starts a session. The [uninstaller](../Packaging/UninstallScripts/postinstall) stops everything the same way and runs `--recover` before it removes any file; if recovery fails it stops and leaves the files for another attempt. To read the state without changing it, use [tools/recovery-readout](../tools/recovery-readout/README.md).
+**Install and removal.** [preinstall](../Packaging/InstallScripts/preinstall) refuses another volume and unsafe paths, asks the app to quit (SIGTERM, up to 10 s, then SIGKILL), stops the coordinator in every logged-in user session, kills and unloads both daemons, then runs `--recover`, which requires both daemons unloaded and restores from the journal. [postinstall](../Packaging/InstallScripts/postinstall) fixes ownership, validates the installation, loads the watchdog and then the controller, and loads the coordinator for the console user. When the app was running for the console user before an update, preinstall notes that user in the state directory and postinstall opens the new app for them. Loading or opening never starts a session. The [uninstaller](../Packaging/UninstallScripts/postinstall) stops everything the same way and runs `--recover` before it removes any file; if recovery fails it stops and leaves the files for another attempt. To read the state without changing it, use [tools/recovery-readout](../tools/recovery-readout/README.md).
+
+**Updates (closed client).** The coordinator asks `keepmacawake.com` for the latest version once a day (none of the core takes part). The app's Install downloads that release's package from the public releases page, checks its SHA-256 file, the pinned team's Developer ID Installer signature and Apple's notarization, and then runs macOS Installer through the administrator dialog; root copies the package into a directory only root can write and checks that copy again before Installer reads it. From there it is an ordinary install: the preinstall and postinstall above.
 
 ## Display off with the lid closed
 

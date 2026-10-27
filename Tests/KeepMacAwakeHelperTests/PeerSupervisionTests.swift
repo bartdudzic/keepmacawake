@@ -10,6 +10,17 @@ final class PeerSupervisionTests: XCTestCase {
             XCTAssertFalse(PeerHeartbeat(generation: "a", updatedAt: then, ready: ready).isFresh(at: now))
         }
     }
+    func testAPeerBusyWithItsOwnRecoveryIsProgressingButNotFresh() {
+        let restoring = PeerHeartbeat(generation: "a", updatedAt: 100, ready: false)
+        XCTAssertFalse(restoring.isFresh(at: 101))
+        XCTAssertTrue(restoring.isProgressing(at: 101))
+        XCTAssertFalse(restoring.isProgressing(at: 100 + ControlConstants.peerTimeoutSeconds), "A peer that stopped publishing is fenced")
+        XCTAssertFalse(restoring.isProgressing(at: 99))
+        XCTAssertFalse(restoring.isProgressing(at: .nan))
+        XCTAssertFalse(PeerHeartbeat(generation: "", updatedAt: 100, ready: false).isProgressing(at: 101))
+        XCTAssertFalse(PeerHeartbeat(generation: "a", updatedAt: 100, ready: false, bootID: "previous-boot")
+            .isProgressing(at: 101, bootID: "current-boot"))
+    }
     func testWatchdogIndependentlyEnforcesACConsoleLeaseAndDeadline() {
         let beat = PeerHeartbeat(generation: "a", updatedAt: 100, ready: true, sessionUser: 501, sessionID: "session", leaseDeadline: 112, sessionDeadline: 400)
         XCTAssertTrue(beat.controllerIsSafe(at: 101, ac: true, console: 501))

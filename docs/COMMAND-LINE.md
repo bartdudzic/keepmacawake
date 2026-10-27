@@ -13,12 +13,14 @@ The session belongs to a per-user background service (the coordinator). The tool
 | `keepmacawake start --unlimited` | Starts a session without a time limit. |
 | `keepmacawake start --hours N` | Starts a session of N whole hours, 1 to 168. |
 | `keepmacawake stop` | Ends the session and restores the sleep setting. |
-| `keepmacawake config get` | Shows the battery settings for the next session. |
-| `keepmacawake config set --battery allowed\|ac-only [--min-battery N]` | Changes them. The threshold is 1 to 100%. A running session keeps its own settings. On a Mac without a built-in battery, allowing battery use or setting a threshold is refused (exit code 4): sessions there need AC power. |
+| `keepmacawake config get` | Shows the settings: battery use for the next session and the daily update check. |
+| `keepmacawake config set --battery allowed\|ac-only [--min-battery N]` | Changes the battery settings. The threshold is 1 to 100%. A running session keeps its own settings. On a Mac without a built-in battery, allowing battery use or setting a threshold is refused (exit code 4): sessions there need AC power. |
+| `keepmacawake config set --update-check daily\|off` | Turns the daily update check on (the default) or off. The panel has no switch for it. |
 | `keepmacawake app launch` | Opens the menu bar app. |
 | `keepmacawake app quit` | Ends the session, then quits the menu bar app. |
 | `keepmacawake buy` | Opens the purchase page for this Mac in the browser and prints the link. |
 | `keepmacawake restore` | Restores a purchase made for this Mac (one request to `keepmacawake.com`). |
+| `keepmacawake check-updates` | Asks `keepmacawake.com` for the latest version now, also with the daily check off, and says whether a newer one is available. It installs nothing. |
 | `keepmacawake capabilities --json` | Describes this contract: commands, options, phases, access states and exit codes. |
 
 During the 3-day trial, counted from the first session on the Mac, a session lasts at most 8 hours; `start --unlimited` or `--hours` above 8 exits with 4 and `purchase_required` without touching anything, and so does any `start` after the trial. A running session is never ended by the trial. With `purchase_required` the JSON error says why (`reason`), carries a message addressed to the person at the Mac with the price and the steps (`user_message`), and lists the commands that may follow (`next_steps`), so an agent can pass it on without guessing.
@@ -32,7 +34,7 @@ Options: `--json`, `--agent` (only with `status`, not with `--json`), `--timeout
 With `--json`, stdout carries exactly one JSON object on one line; diagnostics go to stderr. Keys are stable; new keys may be added.
 
 ```json
-{"access":{"mac_id":"0123456789abcdef0123456789abcdef","max_hours":null,"purchase":null,"state":"purchased","trial_ends_at":null,"trial_seconds_left":null,"trial_started":true},"app_version":"1.0.0","config":{"battery":"ac-only","battery_available":true,"min_battery_percent":20},"protocol_version":"2","result":"ok","schema_version":1,"session":{"confirmed":true,"hours":8,"last_end_reason":null,"live":true,"message":"Sleep prevention is on.","min_battery_percent":null,"phase":"active","remaining_seconds":28734,"unlimited":false}}
+{"access":{"mac_id":"0123456789abcdef0123456789abcdef","max_hours":null,"purchase":null,"state":"purchased","trial_ends_at":null,"trial_seconds_left":null,"trial_started":true},"app_version":"1.0.0","config":{"battery":"ac-only","battery_available":true,"min_battery_percent":20,"update_check":"daily"},"protocol_version":"2","result":"ok","schema_version":1,"session":{"confirmed":true,"hours":8,"last_end_reason":null,"live":true,"message":"Sleep prevention is on.","min_battery_percent":null,"phase":"active","remaining_seconds":28734,"unlimited":false},"update":{"available_version":null,"current_version":"1.0.0","install_command":null}}
 ```
 
 | Key | Meaning |
@@ -46,6 +48,9 @@ With `--json`, stdout carries exactly one JSON object on one line; diagnostics g
 | `session.last_end_reason` | Why the last session ended, for example `durationElapsed`, `batteryThresholdReached`, `clientStopped` |
 | `config.battery`, `config.min_battery_percent` | Settings for the next session |
 | `config.battery_available` | False on a Mac without a built-in battery: `config.battery` is then always `ac-only` and the battery settings cannot be changed |
+| `config.update_check` | `daily` (the default) or `off` |
+| `update.current_version`, `update.available_version` | This version, and a newer one found by the last update check, or null |
+| `update.install_command` | With a newer version: `curl -fsSL https://keepmacawake.com/install.sh \| sh`, which installs it after the administrator password and ends a running session; null otherwise. `update` itself is null from a build without a release version |
 | `access.state` | `purchased`, `trial` or `trialEnded` |
 | `access.trial_seconds_left`, `access.trial_started` | Time left in the trial (its full length before the first session); null when purchased |
 | `access.max_hours` | The longest session a `start` may ask for; null without a limit |
@@ -69,7 +74,7 @@ With `--json`, stdout carries exactly one JSON object on one line; diagnostics g
 
 ## Installing from the command line
 
-`curl -fsSL https://keepmacawake.com/install.sh | sh` installs or updates Keep Mac Awake; `sh -s -- --uninstall` removes it, `--dry-run` only downloads and checks the package, `--version X.Y.Z` picks a release. The script checks the package's SHA-256, Developer ID signature and notarization before running macOS Installer, asks for an administrator once (in the terminal, or in a system dialog when no terminal is attached, as for an AI agent) and refuses while a session runs. Its exit codes: 0 done, 1 failed, 2 invalid arguments, 3 this Mac is not supported, 4 action needed from the user, 5 a session is running.
+`curl -fsSL https://keepmacawake.com/install.sh | sh` installs or updates Keep Mac Awake (the panel's Install does the same checks for a newer version the app found); `sh -s -- --uninstall` removes it, `--dry-run` only downloads and checks the package, `--version X.Y.Z` picks a release. The script checks the package's SHA-256, Developer ID signature and notarization before running macOS Installer, asks for an administrator once (in the terminal, or in a system dialog when no terminal is attached, as for an AI agent) and refuses while a session runs. Its exit codes: 0 done, 1 failed, 2 invalid arguments, 3 this Mac is not supported, 4 action needed from the user, 5 a session is running.
 
 ## Rules and limits
 

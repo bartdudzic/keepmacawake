@@ -210,6 +210,99 @@ final class SessionPolicyTests: XCTestCase {
         XCTAssertTrue(backend.active)
         XCTAssertEqual(backend.operations, ["activate", "restore", "activate"])
     }
+    func testFailedReleaseOnACLossKeepsTheIntentAndRetries() {
+        let (policy, backend, clock) = make()
+        func beat() -> PeerHeartbeat { policy.controllerHeartbeat(generation: "g", updatedAt: clock.value.now, ready: true) }
+        let session = start(policy).sessionID!
+        backend.failRestore = true
+        clock.value.acPower = false; policy.tick()
+        XCTAssertEqual(policy.status.phase, .waitingForAC)
+        XCTAssertEqual(policy.status.sessionID, session, "One failed release does not end the session")
+        XCTAssertNil(policy.status.terminationReason)
+        XCTAssertTrue(beat().blocking, "The setting may still be on, so only the watchdog's release grace applies")
+        clock.value.now += 1; policy.tick()
+        XCTAssertEqual(policy.status.sessionID, session)
+        backend.failRestore = false
+        clock.value.now += 1; policy.tick()
+        XCTAssertEqual(policy.status.phase, .waitingForAC)
+        XCTAssertFalse(backend.active)
+        XCTAssertFalse(beat().blocking)
+        _ = policy.handle(ControlRequest(.renew, sessionID: session), connection: owner, user: 501)
+        clock.value.acPower = true; policy.tick()
+        XCTAssertEqual(policy.status.phase, .active)
+        XCTAssertEqual(policy.status.sessionID, session)
+        XCTAssertEqual(backend.operations, ["activate", "restore", "restore", "restore", "activate"])
+    }
+    func testACReturningBeforeTheReleaseRestoresFirst() {
+        let (policy, backend, clock) = make()
+        let session = start(policy).sessionID!
+        backend.failRestore = true
+        clock.value.acPower = false; policy.tick()
+        backend.failRestore = false
+        clock.value.acPower = true; policy.tick()
+        XCTAssertEqual(policy.status.phase, .active)
+        XCTAssertEqual(policy.status.sessionID, session)
+        XCTAssertEqual(backend.operations, ["activate", "restore", "restore", "activate"])
+
+        let (failing, failingBackend, failingClock) = make()
+        _ = start(failing)
+        failingBackend.failRestore = true
+        failingClock.value.acPower = false; failing.tick()
+        failingClock.value.acPower = true; failing.tick()
+        XCTAssertEqual(failing.status.phase, .failed, "An unconfirmed release with AC back ends the session")
+        XCTAssertNil(failing.status.sessionID)
+        XCTAssertEqual(failing.status.terminationReason, .recoveryFailed)
+        XCTAssertEqual(failingBackend.operations, ["activate", "restore", "restore"])
+        XCTAssertTrue(failing.needsSupervision)
+    }
+    func testOnlyAStartThatPassedEveryOtherCheckWaitsForTheWatchdog() {
+        let (policy, backend, clock) = make()
+        var waits = 0
+        let confirm = { () -> Bool in waits += 1; return true }
+        func start(_ duration: Int, connection: UUID) -> ControlStatus {
+            policy.handle(ControlRequest(.start, durationSeconds: duration), connection: connection, user: 501, confirmWatchdog: confirm)
+        }
+        clock.value.acPower = false
+        XCTAssertNil(start(3600, connection: owner).sessionID)
+        clock.value.acPower = true
+        XCTAssertNil(start(301, connection: owner).sessionID)
+        XCTAssertEqual(waits, 0)
+        XCTAssertNotNil(start(3600, connection: owner).sessionID)
+        XCTAssertEqual(waits, 1)
+        let second = start(3600, connection: UUID())
+        XCTAssertEqual(second.message, "Another session or a recovery is still in progress. Try again in a moment.")
+        XCTAssertEqual(waits, 1)
+        XCTAssertEqual(backend.operations, ["activate"])
+    }
+    func testAStartIsRefusedWithoutTheWatchdogsAnswerAndUsesItsLatestState() {
+        let (policy, backend, clock) = make()
+        let unanswered = policy.handle(ControlRequest(.start, durationSeconds: 3600), connection: owner, user: 501,
+                                       confirmWatchdog: { false })
+        XCTAssertEqual(unanswered.phase, .failed)
+        XCTAssertNil(unanswered.sessionID)
+        XCTAssertNil(unanswered.terminationReason)
+        XCTAssertFalse(policy.needsSupervision)
+        let stale = policy.handle(ControlRequest(.start, durationSeconds: 3600), connection: owner, user: 501,
+                                  confirmWatchdog: { clock.value.watchdogFresh = false; return true })
+        XCTAssertNil(stale.sessionID)
+        XCTAssertTrue(backend.operations.isEmpty)
+        clock.value.watchdogFresh = true
+        for change in [{ clock.value.acPower = false }, { clock.value.consoleUser = 502 }] {
+            let changed = policy.handle(ControlRequest(.start, durationSeconds: 3600), connection: owner, user: 501,
+                                        confirmWatchdog: { change(); return true })
+            XCTAssertEqual(changed.phase, .failed, "A Start refused after the wait never becomes a session")
+            XCTAssertNil(changed.sessionID)
+            XCTAssertNil(changed.terminationReason)
+            XCTAssertFalse(policy.needsSupervision)
+            clock.value.acPower = true; clock.value.consoleUser = 501
+        }
+        XCTAssertTrue(backend.operations.isEmpty)
+        // The generation read after the wait is the one the session follows.
+        let restarted = policy.handle(ControlRequest(.start, durationSeconds: 3600), connection: owner, user: 501,
+                                      confirmWatchdog: { clock.value.watchdogGeneration = "watchdog-2"; clock.value.now += 0.5; return true })
+        XCTAssertEqual(restarted.phase, .active)
+        XCTAssertEqual(restarted.remainingSeconds, 3600)
+    }
     func testUserSwitchWatchdogRestartAndDisconnectEndIntent() {
         for cause in [0, 1, 2, 3] {
             let (policy, backend, clock) = make()

@@ -11,7 +11,7 @@ Keep Mac Awake keeps your MacBook awake with the lid closed, without an external
 - **Display off with the lid closed.** The built-in display goes dark when you close the lid, even if another app asked to keep it on.
 - **A command for Terminal and AI agents.** `keepmacawake start --hours 8`, `status`, `stop`, each with `--json`.
 - **Safe by design.** A separate supervising service restores the normal sleep setting if anything stops or hangs. Quitting the app always restores it. A battery session also ends when the Mac gets too hot.
-- **Almost nothing leaves your Mac.** No accounts, analytics or logs. The only connection the app makes is Restore purchase, when you ask for it.
+- **Almost nothing leaves your Mac.** No accounts, analytics or logs. On its own the app only checks for a new version once a day, with nothing about your Mac in the request; Restore purchase and installing an update happen when you ask.
 
 ## What it does not do
 
@@ -52,7 +52,7 @@ The [script](https://keepmacawake.com/install.sh) downloads the latest package f
 
 ## Update
 
-Download the new package and open it, or run the install command again. The package ends a running session first and keeps your battery settings; the command refuses while a session runs. **Check for Updates…** in the app opens this page; the app does not check for updates on its own.
+Download the new package and open it, or run the install command again. The package ends a running session first and keeps your battery settings; the command refuses while a session runs. The app checks for a new version once a day and shows it in its panel with **Install**, which downloads the package from this page, checks its signature and notarization, asks for your administrator password and opens the new app; **Check for Updates…** in its "…" menu checks at once, and `keepmacawake config set --update-check off` turns the daily check off.
 
 ## Uninstall
 
@@ -85,12 +85,12 @@ npx skills add bartdudzic/keepmacawake -g                                     # 
 3. After paying, the page opens Keep Mac Awake and unlocks this Mac. There is no key to type. The purchase works offline from then on.
 
 - **Reinstalled, or a second user account on the same Mac?** Choose **Restore purchase**.
-- **New Mac, or a repair that replaced the logic board?** Write to hi@keepmacawake.com with your receipt and the new Mac's ID (**Copy Mac ID** in the panel's menu).
+- **New Mac, or a repair that replaced the logic board?** Write to hi@keepmacawake.com with your receipt and the new Mac's ID (**About Keep Mac Awake** in the panel's "…" menu shows it).
 - When the trial ends, a session that is running continues to its end; a new one needs the purchase.
 
 ## Privacy
 
-Keep Mac Awake makes no network connections, except Restore purchase when you choose it. Buy opens the purchase page in your browser. It reads the power source, the battery level, the lid and the thermal state of this Mac. It stores your two battery settings, the position of its menu bar icon, your purchase, the time of the first session for the trial, and the state its services need to restore the sleep setting, and nothing else. Details: [privacy](docs/PRIVACY.md).
+On its own, Keep Mac Awake goes online only for a daily update check to keepmacawake.com, which carries nothing about your Mac and can be turned off. Restore purchase sends this Mac's ID when you choose it, and Install downloads a new version from GitHub when you choose it. Buy opens the purchase page in your browser. It reads the power source, the battery level, the lid and the thermal state of this Mac. It stores your two battery settings, the update check's setting and its last answer, the position of its menu bar icon, your purchase, the time of the first session for the trial, and the state its services need to restore the sleep setting, and nothing else. Details: [privacy](docs/PRIVACY.md).
 
 ## Source code
 

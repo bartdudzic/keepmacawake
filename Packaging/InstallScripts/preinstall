@@ -35,7 +35,15 @@ done
 # steps below stop the services and restore the sleep setting in every case.
 # Only this app's executable path matches, never another program of that name.
 TASK_APP_PATTERN='^/Applications/Keep Mac Awake\.app/Contents/MacOS/Keep Mac Awake( |$)'
+TASK_RELAUNCH="$TASK_STATE/relaunch-app"
+/bin/rm -f "$TASK_RELAUNCH"
 if /usr/bin/pgrep -f "$TASK_APP_PATTERN" >/dev/null 2>&1; then
+    # An update replaces a running app; postinstall opens the new one for the
+    # user at the console, so an update from the panel brings the panel back.
+    TASK_CONSOLE_UID=$(/usr/bin/stat -f %u /dev/console)
+    if [ "$TASK_CONSOLE_UID" != 0 ] && /usr/bin/pgrep -U "$TASK_CONSOLE_UID" -f "$TASK_APP_PATTERN" >/dev/null 2>&1; then
+        echo "$TASK_CONSOLE_UID" > "$TASK_RELAUNCH"
+    fi
     /usr/bin/pkill -TERM -f "$TASK_APP_PATTERN" >/dev/null 2>&1 || true
     TASK_WAIT=0
     while [ "$TASK_WAIT" -lt 50 ] && /usr/bin/pgrep -f "$TASK_APP_PATTERN" >/dev/null 2>&1; do

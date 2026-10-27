@@ -34,5 +34,17 @@ else
     { [ -d /usr/local/bin ] || /bin/mkdir -p /usr/local/bin; } && /bin/ln -s "$TASK_CLI_TARGET" "$TASK_CLI_LINK" ||
         echo 'Could not link /usr/local/bin/keepmacawake; the tool is inside the app.' >&2
 fi
+# The app was running before the update: open the new one for the same user,
+# still at the console. Opening the app never starts a session.
+TASK_RELAUNCH='/Library/Application Support/KeepMacAwake/relaunch-app'
+if [ -f "$TASK_RELAUNCH" ] && [ ! -L "$TASK_RELAUNCH" ]; then
+    TASK_RELAUNCH_UID=$(/usr/bin/head -c 16 "$TASK_RELAUNCH")
+    /bin/rm -f "$TASK_RELAUNCH"
+    if [ "$TASK_RELAUNCH_UID" = "$TASK_CONSOLE_UID" ] && [ "$TASK_CONSOLE_UID" != 0 ]; then
+        /bin/launchctl asuser "$TASK_CONSOLE_UID" /usr/bin/sudo -u "#$TASK_CONSOLE_UID" \
+            /usr/bin/open '/Applications/Keep Mac Awake.app' >/dev/null 2>&1 ||
+            echo 'Open Keep Mac Awake from Applications to see its panel again.' >&2
+    fi
+fi
 # Loading these services never starts a session. The user must choose Turn On.
 exit 0

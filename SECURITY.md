@@ -27,7 +27,7 @@ Send reports to **hi@keepmacawake.com**, with "Security" in the subject. Include
 
 ## Data
 
-The app, the coordinator and the services make no network connections, except **Restore purchase** when you choose it: one HTTPS request from the coordinator to keepmacawake.com with this Mac's ID. Keep Mac Awake stores the two battery preferences, the position of its menu bar icon, the license after a purchase, the first-session record the trial is counted from, and the state the services need to restore the sleep setting; it keeps no session history and writes no logs. Details: [privacy](docs/PRIVACY.md).
+On their own, the app, the coordinator and the services make one network request: a daily update check from the coordinator to keepmacawake.com that carries nothing about this Mac (it can be turned off). Only when you choose them: **Restore purchase**, one HTTPS request from the coordinator to keepmacawake.com with this Mac's ID, and **Install** for a new version, which downloads it from the GitHub releases. An update installs only with the Developer ID signature of the pinned team and Apple's notarization, checked again by root on its own copy before macOS Installer runs. Keep Mac Awake stores the two battery preferences, the update check setting and the latest version it found, the position of its menu bar icon, the license after a purchase, the first-session record the trial is counted from, and the state the services need to restore the sleep setting; it keeps no session history and writes no logs. Details: [privacy](docs/PRIVACY.md).
 
 ## Known limits
 

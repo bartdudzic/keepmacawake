@@ -123,8 +123,14 @@ public struct PeerHeartbeat: Codable {
         self.restorationPending = restorationPending
     }
     public func isFresh(at now: Double, bootID currentBoot: String? = CurrentBoot.identifier) -> Bool {
+        ready && isProgressing(at: now, bootID: currentBoot)
+    }
+    /// The peer keeps publishing, ready or not. A peer that is busy with its own
+    /// recovery publishes `ready == false` every second, so it is not stopped and
+    /// fencing it would only restart that recovery.
+    public func isProgressing(at now: Double, bootID currentBoot: String? = CurrentBoot.identifier) -> Bool {
         guard let currentBoot, !currentBoot.isEmpty, bootID == currentBoot else { return false }
-        return ready && !generation.isEmpty && now.isFinite && updatedAt.isFinite &&
+        return !generation.isEmpty && now.isFinite && updatedAt.isFinite &&
         now >= updatedAt && now - updatedAt < ControlConstants.peerTimeoutSeconds
     }
     /// An idle controller: ready, not blocking, nothing to restore and no session

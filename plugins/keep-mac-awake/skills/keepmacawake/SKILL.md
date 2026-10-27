@@ -57,6 +57,10 @@ Only with the user's agreement, and only while they are at the Mac, because macO
 3. If they agree: `curl -fsSL https://keepmacawake.com/install.sh | sh`. Tell them the password dialog is coming. Exit codes: 0 done, 3 this Mac is not supported, 4 the dialog was cancelled, 5 a session is running.
 4. Check with `keepmacawake status --json`. Installing turns nothing on.
 
+## Updates
+
+The app checks for a new version once a day. When `update.available_version` in `keepmacawake status --json` is not null (`status --agent` names it too), tell the user once in the conversation. Install it only if they agree, no session is running and they are at the Mac: **Install** in the menu bar panel, or `update.install_command` (`curl -fsSL https://keepmacawake.com/install.sh | sh`), which asks for the administrator password in a dialog. Installing ends a running session. Leave the daily check (`config.update_check`) to the user.
+
 ## Limits
 
 - Not for Intel Macs or macOS before 26.

@@ -193,19 +193,20 @@ final class ServiceRuntime: NSObject, NSXPCListenerDelegate {
 
     func request(_ data: Data, connection: NSXPCConnection, identifier: UUID, reply: @escaping (Data) -> Void) {
         queue.async {
-            self.supervise()
+            // The policy ticks inside handle(), before it reads the request.
+            self.supervise(tickingPolicy: false)
             let status: ControlStatus
             if data.count > 4096 {
                 status = ControlStatus(phase: .failed, message: "The request is too large.")
             } else if let console = consoleUserID(), connection.effectiveUserIdentifier == console,
                       let request = try? JSONDecoder().decode(ControlRequest.self, from: data) {
                 if self.ready && self.recovery == nil {
-                    if request.kind == .start && !self.awaitWatchdogAfterWake() {
-                        // A refusal before any session or setting change, like the policy's own.
-                        status = ControlStatus(phase: .failed, message: "The supervising service is not ready. Try again in a moment.")
-                    } else {
-                        status = self.policy.handle(request, connection: identifier, user: console)
-                    }
+                    status = self.policy.handle(request, connection: identifier, user: console, confirmWatchdog: {
+                        // The watchdog reads the policy's state after this request's tick, for
+                        // example an expired session already ended, not the timer's older one.
+                        self.publishOrExit()
+                        return self.awaitWatchdogAfterWake()
+                    })
                 } else {
                     let reason: ControlStatus.TerminationReason?
                     switch request.kind {
@@ -354,8 +355,8 @@ final class ServiceRuntime: NSObject, NSXPCListenerDelegate {
         recovery = FencedRecovery(fence: { try PeerFencer.kill(peer) }, restore: { [backend] in try backend.restore() })
     }
 
-    private func supervise() {
-        superviseOnce()
+    private func supervise(tickingPolicy: Bool = true) {
+        superviseOnce(tickingPolicy: tickingPolicy)
         updateCadence()
         updateFirstSession()
     }
@@ -371,7 +372,7 @@ final class ServiceRuntime: NSObject, NSXPCListenerDelegate {
         }
     }
 
-    private func superviseOnce() {
+    private func superviseOnce(tickingPolicy: Bool = true) {
         if let recovery {
             publishOrExit() // ready=false before kill, lock, or potentially blocking native I/O
             do {
@@ -395,14 +396,16 @@ final class ServiceRuntime: NSObject, NSXPCListenerDelegate {
                     ready = true
                 } catch {
                     recoveryMessage = "Recovery in progress: \(error.localizedDescription)"
-                    if now - startedAt >= ControlConstants.peerTimeoutSeconds && peer?.isFresh(at: now) != true {
+                    // A watchdog that publishes but is not ready is restoring too. Fencing
+                    // it would restart its recovery, which fences this controller again.
+                    if now - startedAt >= ControlConstants.peerTimeoutSeconds && peer?.isProgressing(at: now) != true {
                         beginRecovery(fencing: .watchdog, message: "The supervising service is not responding during recovery.", reason: .watchdogUnavailable)
                     }
                 }
             } else if (policy.sessionUser != nil || policy.requiresRestoration) && peer?.isFresh(at: now) != true {
                 // A SIGSTOP'ed watchdog may own flock. Kill before requesting that lock.
                 beginRecovery(fencing: .watchdog, message: "The supervising service stopped making progress. Ending the session.", reason: .watchdogUnavailable)
-            } else {
+            } else if tickingPolicy {
                 policy.tick()
             }
         } else {
