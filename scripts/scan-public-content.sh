@@ -1,7 +1,9 @@
 #!/bin/bash
 # Fails when the public tree contains anything that must stay private:
-# non-English text, private documents, business terms, local paths,
-# e-mail addresses other than the public contact, or unfilled markers.
+# non-English text, private documents, business terms, keys and secrets,
+# payment and hosting account IDs, chip names of Macs (public texts name no
+# tested Mac), local paths, e-mail addresses other than the public contact,
+# or unfilled markers.
 set -euo pipefail
 cd "${1:-$(dirname "${BASH_SOURCE[0]}")/..}"
 
@@ -31,8 +33,11 @@ polish=$(printf '(\xc4\x85|\xc4\x87|\xc4\x99|\xc5\x82|\xc5\x84|\xc3\xb3|\xc5\x9b
 dashes=$(printf '(\xe2\x80\x94|\xe2\x80\x93)')
 check 'Polish characters' "$polish" ''
 check 'Dashes U+2014 or U+2013' "$dashes" ''
-check 'Private documents' 'docs/(superpowers|decisions|testing|research|operations)|agent-handoff|BartOS' '-i'
+check 'Private documents' 'docs/(superpowers|decisions|testing|research|operations|content|reference)|agent-handoff|compatibility\.md|BartOS' '-i'
 check 'Business terms' '\b(paddle|gumroad|lemon ?squeezy|pricing|marketing|competitors?|research|license key|entitlement)\b' '-i'
+check 'Keys and secrets' '-----BEGIN [A-Z ]*PRIVATE KEY|\b(sk|rk|pk)_(live|test)_[A-Za-z0-9]|\bwhsec_[A-Za-z0-9]|"d" *: *"[A-Za-z0-9_-]{16,}|\bgh[pousr]_[A-Za-z0-9]{20,}|\bgithub_pat_|\bAKIA[0-9A-Z]{16}\b|\bxox[abpr]-' ''
+check 'Account IDs' '\b(price|prod|acct|cus)_[A-Za-z0-9]{14,}|\b(cs|pi)_(live|test)_|\bphc_[A-Za-z0-9]{20,}|\.workers\.dev' ''
+check 'Mac chip names' '\bM[1-9]( (Pro|Max|Ultra))?\b' ''
 check 'Local paths' '/Users/|/private/var/|/var/folders/' ''
 check 'E-mail addresses' '[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}' '' 'hi@keepmacawake\.com|git@github\.com'
 check 'Unfilled markers' 'OWNER-TODO|TODO-OWNER' ''

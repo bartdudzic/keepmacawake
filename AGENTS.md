@@ -8,6 +8,7 @@ This repository is the public core of Keep Mac Awake: the root helper and watchd
 - Everything is English. Plain Markdown, relative links, no U+2014 or U+2013 dashes. `scripts/scan-public-content.sh` must pass.
 - No network code. No logging of user activity.
 - The agent plugin only calls the public `keepmacawake` command. Its hook stays read only: no network, no start, stop or settings change, and it never reads the user's prompts or files. Check it with `claude plugin validate --strict plugins/keep-mac-awake` and `claude plugin validate --strict .`.
+- Every commit here is an export from the maintainer's development tree. Do not commit, tag or push here by hand, and never force push: a change made here is lost at the next export.
 - Pull requests from others are not accepted for now; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Start with [README.md](README.md), [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/FAILURE-MODES.md](docs/FAILURE-MODES.md).

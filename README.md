@@ -83,7 +83,7 @@ npx skills add bartdudzic/keepmacawake -g                                     # 
 ## Buying
 
 1. Install Keep Mac Awake and use it. The 3-day trial starts with your first session; sessions last up to 8 hours.
-2. When you are ready, choose **Buy for $9** in the panel (or run `keepmacawake buy`). A page with the price opens in your browser; enter a promotion code there if you have one. Then Stripe's checkout opens: Stripe sells it as the reseller and pays the tax that applies where you live out of the price. A code that makes it free needs no card.
+2. When you are ready, choose **Buy for $9** in the panel (or run `keepmacawake buy`). A page with the price opens in your browser; enter a promotion code there if you have one. Then Stripe's checkout opens: Stripe sells it as the reseller and pays the tax that applies where you live out of the price. A code that makes it free needs no card, only your e-mail.
 3. After paying, the page opens Keep Mac Awake and unlocks this Mac. There is no key to type. The purchase works offline from then on.
 
 - **Reinstalled, or a second user account on the same Mac?** Choose **Restore purchase**.
