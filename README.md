@@ -27,7 +27,7 @@ Keep Mac Awake keeps your MacBook awake with the lid closed, without an external
 
 ## Keep it ventilated
 
-A Mac that works with its lid closed still produces heat. Do not run it in a closed bag, under a pillow or on a soft surface. On battery, Keep Mac Awake ends the session at a serious thermal state, but it cannot protect a Mac from a place without airflow.
+A Mac that works with its lid closed still produces heat. Do not run it in a closed bag, under a pillow or on a soft surface. On battery, Keep Mac Awake ends the session at a serious thermal state. On AC power it does not end a session because of heat: macOS manages the temperature itself, so where you put the Mac matters. No software can protect a Mac from a place without airflow.
 
 ## Install
 
@@ -92,7 +92,7 @@ npx skills add bartdudzic/keepmacawake -g                                     # 
 
 ## Privacy
 
-On its own, Keep Mac Awake goes online only for a daily update check to keepmacawake.com, which carries nothing about your Mac and can be turned off. Restore purchase sends this Mac's ID when you choose it, and Install downloads a new version from GitHub when you choose it. Buy opens the purchase page in your browser. It reads the power source, the battery level, the lid and the thermal state of this Mac. It stores your two battery settings, the update check's setting and its last answer, the position of its menu bar icon, your purchase, the time of the first session for the trial, and the state its services need to restore the sleep setting, and nothing else. Details: [privacy](docs/PRIVACY.md).
+On its own, Keep Mac Awake goes online only for updates: a daily check with keepmacawake.com and, when it finds a newer version and no session runs, the download of that version from GitHub. Neither carries anything about your Mac, and `keepmacawake config set --update-check off` turns both off. Restore purchase sends this Mac's ID only when you choose it. Buy opens the purchase page in your browser. It reads the power source, the battery level, the lid and the thermal state of this Mac. It stores your two battery settings, the update check's setting and its last answer, the position of its menu bar icon, your purchase, the time of the first session for the trial, and the state its services need to restore the sleep setting, and nothing else. Details: [privacy](docs/PRIVACY.md).
 
 ## Source code
 

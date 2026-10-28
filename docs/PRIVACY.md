@@ -27,11 +27,11 @@ Readings are not stored or sent; each reading replaces the previous one in memor
 
 ## What the app sends
 
-On its own, one thing; the rest only when you ask:
+On its own, only for updates; the rest only when you ask:
 
 - **The update check**, on by default. About once a day the coordinator makes one HTTPS request to `keepmacawake.com/api/latest` and gets back the number of the latest version. The request carries nothing about this Mac: no Mac ID, no version, no cookies, and a User-Agent that says only "Keep Mac Awake". Turn it off with `keepmacawake config set --update-check off`; then it checks only when you choose **Check for Updates…** in the panel's "…" menu (or run `keepmacawake check-updates`), and nothing installs by itself.
-- **Restore purchase**, only when you ask (in the panel, or `keepmacawake restore`): one HTTPS request from the coordinator to `keepmacawake.com` with the Mac ID in the address, which gets back the purchase if this Mac was paid for. No cookies, no cache, nothing else in the request.
 - **Installing an update**, by itself when the update check found a newer version and no session runs (since 1.0.4), or at once when you choose **Install** in the panel: the coordinator downloads that release's package and its checksum file from the public releases page (`github.com/bartdudzic/keepmacawake/releases`), as the command-line installer does; GitHub sees that download like any other, and it carries nothing about this Mac. The package is installed only if it matches the checksum, carries the Developer ID signature of the Keep Mac Awake developer and is notarized by Apple, and only if it is newer than the installed version; the system service checks its own copy again and installs it with no password. With the update check off, nothing installs by itself.
+- **Restore purchase**, only when you ask (in the panel, or `keepmacawake restore`): one HTTPS request from the coordinator to `keepmacawake.com` with the Mac ID in the address, which gets back the purchase if this Mac was paid for. No cookies, no cache, nothing else in the request.
 
 Otherwise the app, the coordinator, the helper and the watchdog make no network connections; a session never needs the network.
 
