@@ -2,6 +2,8 @@
 
 Keep Mac Awake keeps your MacBook awake with the lid closed, without an external display or keyboard, so long jobs, downloads and AI agents keep running. You start each session yourself, from the menu bar or from Terminal; a timed session ends on its own.
 
+![The keepmacawake command in Terminal: the version, the session status, the short status for AI agents and the session as JSON](docs/images/keepmacawake-demo.gif)
+
 **9 USD, tax included, a one-time payment per Mac.** No subscription. Try it free for 3 days, with no card and no account; during the trial a session lasts up to 8 hours. See [Buying](#buying).
 
 ## What it does
