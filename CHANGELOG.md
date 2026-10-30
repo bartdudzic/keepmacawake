@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.6
+
+- Signed with new Developer ID certificates of the same developer, which spell the developer's legal name correctly.
+- The first update check after a new installation adds `?first=1`, the same on every Mac, so keepmacawake.com can count new installations per day. Nothing about the Mac is sent; an update, a reinstall that keeps the settings and an installation with the update check off never send it.
+- 1.0.4 and 1.0.5 install 1.0.6 by themselves when no session runs.
+
 ## 1.0.5
 
 - The price is stated with tax included: 9 USD, tax included, one time, for this Mac, in the menu bar panel and in `keepmacawake` (its text, its JSON `price` and the trial messages). The checkout has charged 9 USD with tax included since 2026-10-27.

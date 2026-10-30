@@ -31,11 +31,11 @@ A Mac that works with its lid closed still produces heat. Do not run it in a clo
 
 ## Install
 
-1. Download `KeepMacAwake-1.0.5-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
+1. Download `KeepMacAwake-1.0.6-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
 2. Optional: check the download in Terminal. The result must match the `.sha256` file of the release.
 
    ```sh
-   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.5-arm64.pkg
+   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.6-arm64.pkg
    ```
 
 3. Open the package and follow the steps. Then click the icon in the menu bar and press the power button.
@@ -52,13 +52,15 @@ An AI agent does not run this itself: it gives you the download link and leaves 
 
 The [script](https://keepmacawake.com/install.sh) downloads the latest package from the releases, checks its SHA-256, the Developer ID signature and Apple's notarization, and runs macOS Installer. macOS asks for an administrator password once: in Terminal, or in a system dialog when an AI agent runs the command. It refuses while a session runs, and installing turns nothing on. Options: `--version X.Y.Z`, `--dry-run` (download and check only) and `--uninstall`, passed as `sh -s -- --uninstall`.
 
+With Homebrew: `brew install --cask bartdudzic/tap/keepmacawake` ([tap](https://github.com/bartdudzic/homebrew-tap)).
+
 ## Update
 
 Download the new package and open it, or run the install command again. The package ends a running session first and keeps your battery settings; the command refuses while a session runs. The app checks for a new version once a day and, since 1.0.4, installs it by itself when no session runs: it downloads the package from this page, checks its signature and notarization, installs it with no password and opens again. **Install** in its panel does it at once, **Check for Updates…** in its "…" menu checks at once, and `keepmacawake config set --update-check off` turns the daily check, and with it the automatic install, off.
 
 ## Uninstall
 
-Open `KeepMacAwake-Uninstall-1.0.5-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
+Open `KeepMacAwake-Uninstall-1.0.6-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
 
 ## Command line
 
