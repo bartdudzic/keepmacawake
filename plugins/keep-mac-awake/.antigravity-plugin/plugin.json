@@ -1,0 +1,30 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "keep-mac-awake",
+  "displayName": "Keep Mac Awake",
+  "version": "1.0.5",
+  "description": "Keeps a MacBook awake with the lid closed while long agent tasks run, through the Keep Mac Awake app (a paid app with a free trial).",
+  "logo": "assets/icon.png",
+  "suggestedPrompts": [
+    "Run the full test suite and fix what fails. I'm closing the lid and will check back from my phone.",
+    "Keep the Mac awake for the next 2 hours while this migration runs.",
+    "Is Keep Mac Awake on, and how much time is left?"
+  ],
+  "author": {
+    "name": "Bart Dudzic",
+    "email": "hi@keepmacawake.com",
+    "url": "https://keepmacawake.com"
+  },
+  "homepage": "https://keepmacawake.com",
+  "repository": "https://github.com/bartdudzic/keepmacawake",
+  "license": "MIT",
+  "keywords": [
+    "macos",
+    "macbook",
+    "lid-closed",
+    "keep-awake",
+    "sleep",
+    "long-running-tasks",
+    "remote-control"
+  ]
+}

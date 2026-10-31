@@ -81,8 +81,11 @@ The [Keep Mac Awake plugin](plugins/keep-mac-awake/README.md) teaches your agent
 
 ```sh
 claude plugin install keep-mac-awake --marketplace bartdudzic/keepmacawake   # Claude Code
+gemini extensions install https://github.com/bartdudzic/keepmacawake         # Gemini CLI
 npx skills add bartdudzic/keepmacawake -g                                     # any agent that reads Agent Skills
 ```
+
+Codex, GitHub Copilot CLI and Antigravity: see [Install](plugins/keep-mac-awake/README.md#install).
 
 ## Buying
 

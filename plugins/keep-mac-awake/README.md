@@ -45,6 +45,19 @@ copilot plugin marketplace add bartdudzic/keepmacawake
 copilot plugin install keep-mac-awake@keepmacawake
 ```
 
+Gemini CLI (the skill as the extension's context, without the hook):
+
+```sh
+gemini extensions install https://github.com/bartdudzic/keepmacawake
+```
+
+Antigravity (the skill only, without the hook), from a clone of this repository:
+
+```sh
+git clone https://github.com/bartdudzic/keepmacawake
+agy plugin install keepmacawake/plugins/keep-mac-awake
+```
+
 Any agent that reads Agent Skills (the skill only, without the hook):
 
 ```sh

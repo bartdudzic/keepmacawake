@@ -1,0 +1,6 @@
+{
+  "name": "keep-mac-awake",
+  "version": "1.0.5",
+  "description": "Lets your agent keep a MacBook awake with the lid closed while long tasks run, through the Keep Mac Awake app (a paid app with a free trial).",
+  "contextFileName": "plugins/keep-mac-awake/skills/keepmacawake/SKILL.md"
+}
