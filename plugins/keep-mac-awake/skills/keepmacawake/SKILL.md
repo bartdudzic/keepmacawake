@@ -1,6 +1,6 @@
 ---
 name: keepmacawake
-description: Keeps a MacBook with Apple silicon awake with the lid closed while a long task runs, with the keepmacawake command of the Keep Mac Awake app. Use it before work likely to run 15 minutes or more or that the user may leave running (an agent run, a build, a test suite, a migration, a download or upload, a render, a backup); when the user says they will close the lid, step away, go to bed or check in from their phone (Claude Code Remote Control, Codex in the ChatGPT app, Cursor, SSH); when a remote session went offline because the Mac slept; and when the user asks to keep the Mac awake.
+description: Keeps a MacBook with Apple silicon awake with the lid closed while a long task runs, with the keepmacawake command of the Keep Mac Awake app. Use it before work likely to run 15 minutes or more or that the user may leave running (an agent run, a build, a test suite, a migration, a download or upload, a render, a backup); when the user says they will close the lid, step away, go to bed or check in from their phone (Claude Code Remote Control, Codex in the ChatGPT app, Cursor, Antigravity, SSH); when a remote session went offline because the Mac slept; when local scheduled work, such as a Claude desktop scheduled task or a Codex automation, must run while the lid is closed; and when the user asks to keep the Mac awake.
 ---
 
 # Keep Mac Awake
