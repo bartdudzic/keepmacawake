@@ -1,6 +1,6 @@
 # Keep Mac Awake plugin for AI agents
 
-This plugin teaches an AI agent to use Keep Mac Awake, a macOS app that keeps a MacBook with Apple silicon awake with the lid closed during a session. It needs the app, which is installed separately and is not free: a 3-day trial, then a one-time purchase per Mac. With it, the agent starts a timed session before long work, stops it when the work is done, and tells you when the app needs something from you, such as AC power or a purchase after the trial.
+This plugin teaches an AI agent to use Keep Mac Awake, a macOS app that keeps a MacBook with Apple silicon awake with the lid closed during a session. It needs the app, which is installed separately and is a paid app with a free trial ([keepmacawake.com](https://keepmacawake.com)). With it, the agent starts a timed session before long work, stops it when the work is done, and tells you when the app needs something from you, such as AC power or a purchase after the trial.
 
 It has two parts:
 
@@ -83,4 +83,4 @@ Write to hi@keepmacawake.com. Security issues: see [SECURITY.md](https://github.
 
 ## License
 
-The plugin is under the [MIT License](LICENSE). The Keep Mac Awake app it controls is not: buying it after the 3-day trial is covered by its own terms.
+The plugin is under the [MIT License](LICENSE). The Keep Mac Awake app it controls is not: buying it after the free trial is covered by its own terms.
