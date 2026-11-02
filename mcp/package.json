@@ -1,6 +1,6 @@
 {
   "name": "keepmacawake-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for Keep Mac Awake: lets an AI agent keep a MacBook awake with the lid closed while long tasks run, through the keepmacawake command of the Keep Mac Awake app.",
   "mcpName": "com.keepmacawake/mcp",
   "type": "module",

@@ -3,7 +3,7 @@
   "name": "com.keepmacawake/mcp",
   "title": "Keep Mac Awake",
   "description": "Keep a MacBook awake with the lid closed while an agent's long task runs (Keep Mac Awake app).",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "websiteUrl": "https://keepmacawake.com",
   "repository": {
     "url": "https://github.com/bartdudzic/keepmacawake",
@@ -14,7 +14,7 @@
     {
       "registryType": "npm",
       "identifier": "keepmacawake-mcp",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "transport": {
         "type": "stdio"
       }
