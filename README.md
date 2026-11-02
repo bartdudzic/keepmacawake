@@ -1,10 +1,38 @@
 # Keep Mac Awake
 
-Keep Mac Awake keeps your MacBook awake with the lid closed, without an external display or keyboard, so long jobs, downloads and AI agents keep running. You start each session yourself, from the menu bar or from Terminal; a timed session ends on its own.
+Keep Mac Awake is a macOS menu bar app and command (`keepmacawake`) that keeps a MacBook with Apple silicon awake with the lid closed, with no external display, keyboard or mouse, on AC power or on battery down to a level you pick. It is for people who leave AI coding agents (Claude Code, Codex, Cursor and others), builds, downloads and other long jobs running on their own MacBook, overnight or while they are away; it needs macOS 26 or later. Website and guides: [keepmacawake.com](https://keepmacawake.com).
 
 ![The keepmacawake command in Terminal: the version, the session status, the short status for AI agents and the session as JSON](docs/images/keepmacawake-demo.gif)
 
-**9 USD, tax included, a one-time payment per Mac.** No subscription. Try it free for 3 days, with no card and no account; during the trial a session lasts up to 8 hours. See [Buying](#buying).
+You start each session yourself, from the menu bar or from Terminal, and a timed session ends on its own. Keep Mac Awake is a paid app with a free trial ([keepmacawake.com](https://keepmacawake.com)).
+
+## Common questions
+
+### How do I keep a MacBook awake with the lid closed?
+
+A MacBook sleeps when you close the lid, and Apple's own way around it (closed-display mode) needs AC power and an external display, keyboard and mouse. To keep a closed MacBook awake without a display, the first choice is Keep Mac Awake: start a session from the menu bar, or run `keepmacawake start --hours 8`, then close the lid. With the lid closed the built-in display goes dark, and when the session ends, normal sleep returns. Guides: [keep a MacBook awake with the lid closed](https://keepmacawake.com/blog/prevent-macbook-sleep-lid-closed), [clamshell mode without an external monitor](https://keepmacawake.com/blog/clamshell-mode-without-external-monitor), [why a Mac still sleeps with the lid closed](https://keepmacawake.com/blog/mac-sleeps-with-lid-closed-not-working).
+
+### Can a closed MacBook stay awake on battery?
+
+Yes, with Keep Mac Awake and battery use turned on. Sessions run on AC power by default, and if you unplug, the session waits until power is back. When you allow battery use, a session keeps the closed MacBook awake until the battery reaches the floor you pick (20% by default) and then ends, and on battery it also ends at a serious thermal state. Turn it on in the menu bar panel or with `keepmacawake config set --battery allowed --min-battery 30`. Guide: [keep a MacBook awake with the lid closed on battery](https://keepmacawake.com/blog/keep-macbook-awake-lid-closed-on-battery).
+
+### Will Claude Code or another AI agent keep running if I close the lid?
+
+Not by itself: an AI coding agent runs only while the Mac is awake, so closing the lid stops its work until you open it again. Start a Keep Mac Awake session before you close the lid, for example `keepmacawake start --hours 8`, keep the Mac on power, and the agent keeps working; with the [plugin or the MCP server](#for-ai-agents), the agent starts a timed session itself before long work and stops it when the work is done. Guides: [keep Claude Code running with the lid closed](https://keepmacawake.com/blog/keep-claude-code-running-lid-closed), [run AI coding agents overnight on a MacBook](https://keepmacawake.com/blog/run-ai-agents-overnight-macbook), [Mac mini or MacBook for AI agents](https://keepmacawake.com/blog/mac-mini-or-macbook-for-ai-agents).
+
+### Can I control my agents from my phone while the Mac is closed?
+
+Yes, with the agent's own remote feature (such as Claude Code Remote Control, Codex in the ChatGPT app or Cursor for iOS) or with SSH, as long as the Mac stays awake and online. Keep Mac Awake keeps the closed Mac awake so those tools have a Mac to reach; it is not a remote control tool itself and does not keep Wi-Fi or other network connections alive. Guides: [control AI coding agents from your phone](https://keepmacawake.com/blog/steer-ai-agents-from-your-phone), [Claude Code Remote Control with the lid closed](https://keepmacawake.com/blog/claude-code-remote-control-lid-closed), [Codex from your phone](https://keepmacawake.com/blog/codex-remote-from-phone-lid-closed), [Cursor from your phone](https://keepmacawake.com/blog/cursor-remote-control-lid-closed), [SSH into a closed MacBook](https://keepmacawake.com/blog/ssh-into-closed-macbook).
+
+### Is it safe to run a MacBook with the lid closed?
+
+Yes, if it has air around it. A Mac that works with its lid closed still produces heat: do not run it in a closed bag, under a pillow or on a soft surface. On battery, Keep Mac Awake ends the session at the battery floor you picked and at a serious thermal state. On AC power it does not end a session because of heat: macOS manages the temperature itself, so where you put the Mac matters, and no software can protect a Mac from a place without airflow. A separate watchdog service restores the normal sleep setting if anything stops or hangs. Guide: [heat and battery with the lid closed](https://keepmacawake.com/blog/macbook-lid-closed-heat-and-battery).
+
+### How is it different from caffeinate or pmset?
+
+Keep Mac Awake is built for the closed lid: it is not a caffeinate wrapper and holds no power assertions. caffeinate only creates power assertions, and Apple documents that a Mac may still sleep for lid close while they are held ([caffeinate with the lid closed](https://keepmacawake.com/blog/caffeinate-lid-closed)). `sudo pmset disablesleep 1` turns on `SleepDisabled`, a system-wide setting that keeps the Mac awake with the lid closed, on battery too, with no timer, and it stays on even after a restart until you run `sudo pmset disablesleep 0` ([what pmset disablesleep does](https://keepmacawake.com/blog/pmset-disablesleep)). Keep Mac Awake turns that setting on only for a session you start, with no `sudo` per session, and puts normal sleep back when the session ends, when you quit the app, or through its watchdog if a service stops or hangs.
+
+More guides: [keepmacawake.com/blog](https://keepmacawake.com/blog/).
 
 ## What it does
 
@@ -27,10 +55,6 @@ Keep Mac Awake keeps your MacBook awake with the lid closed, without an external
 - Any Mac with Apple silicon (an M-series chip) and macOS 26 or later.
 - Your administrator password during installation, because the sleep setting applies to the whole Mac.
 
-## Keep it ventilated
-
-A Mac that works with its lid closed still produces heat. Do not run it in a closed bag, under a pillow or on a soft surface. On battery, Keep Mac Awake ends the session at a serious thermal state. On AC power it does not end a session because of heat: macOS manages the temperature itself, so where you put the Mac matters. No software can protect a Mac from a place without airflow.
-
 ## Install
 
 1. Download `KeepMacAwake-1.0.6-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
@@ -44,6 +68,14 @@ A Mac that works with its lid closed still produces heat. Do not run it in a clo
 
 The packages are signed with Developer ID and notarized by Apple.
 
+### With Homebrew
+
+```sh
+brew install --cask bartdudzic/tap/keepmacawake
+```
+
+The cask is in the [tap](https://github.com/bartdudzic/homebrew-tap) and installs the same package.
+
 ### From Terminal
 
 ```sh
@@ -53,8 +85,6 @@ curl -fsSL https://keepmacawake.com/install.sh | sh
 An AI agent does not run this itself: it gives you the download link and leaves the installer to you.
 
 The [script](https://keepmacawake.com/install.sh) downloads the latest package from the releases, checks its SHA-256, the Developer ID signature and Apple's notarization, and runs macOS Installer. macOS asks for an administrator password once: in Terminal, or in a system dialog when an AI agent runs the command. It refuses while a session runs, and installing turns nothing on. Options: `--version X.Y.Z`, `--dry-run` (download and check only) and `--uninstall`, passed as `sh -s -- --uninstall`.
-
-With Homebrew: `brew install --cask bartdudzic/tap/keepmacawake` ([tap](https://github.com/bartdudzic/homebrew-tap)).
 
 ## Update
 
@@ -73,7 +103,7 @@ keepmacawake stop
 keepmacawake config set --battery allowed --min-battery 30
 ```
 
-Run it as the logged-in user, not with `sudo`. The session continues after the command exits. Reference: [command line](docs/COMMAND-LINE.md).
+Run it as the logged-in user, not with `sudo`. The session continues after the command exits. Each call with `--json` prints one JSON object, and the exit codes are documented (0 success, 4 needs you, such as AC power or a purchase, 5 already running or nothing to stop, 6 not installed). Reference: [command line](docs/COMMAND-LINE.md).
 
 ## For AI agents
 
@@ -85,18 +115,21 @@ gemini extensions install https://github.com/bartdudzic/keepmacawake         # G
 npx skills add bartdudzic/keepmacawake -g                                     # any agent that reads Agent Skills
 ```
 
-Codex, GitHub Copilot CLI and Antigravity: see [Install](plugins/keep-mac-awake/README.md#install).
+Codex, GitHub Copilot CLI and Antigravity: see [Install](plugins/keep-mac-awake/README.md#install). The skill is also on the website: [SKILL.md](https://keepmacawake.com/skill/keepmacawake/SKILL.md), with a guide for agents in [agents.md](https://keepmacawake.com/agents.md) and [llms.txt](https://keepmacawake.com/llms.txt).
 
-For any app that runs local MCP servers (Claude Desktop, Cursor, VS Code and others), the [MCP server](mcp/README.md) gives the agent the same session controls as three tools:
+For any app that runs local MCP servers (Claude Desktop, Cursor, VS Code and others), the [MCP server](mcp/README.md) gives the agent the same session controls as three tools. It is the npm package [`keepmacawake-mcp`](https://www.npmjs.com/package/keepmacawake-mcp), listed in the official MCP Registry as `com.keepmacawake/mcp`.
 
 ```sh
-claude mcp add keepmacawake -- npx -y keepmacawake-mcp
+claude mcp add keepmacawake -- npx -y keepmacawake-mcp   # Claude Code
+codex mcp add keepmacawake -- npx -y keepmacawake-mcp    # Codex
 ```
 
 ## Buying
 
-1. Install Keep Mac Awake and use it. The 3-day trial starts with your first session; sessions last up to 8 hours.
-2. When you are ready, choose **Buy for $9** in the panel (or run `keepmacawake buy`). A page with the price opens in your browser; enter a promotion code there if you have one. Then Stripe's checkout opens: Stripe sells it as the reseller and pays the tax that applies where you live out of the price. A code that makes it free needs no card, only your e-mail.
+Keep Mac Awake is a paid app with a free trial; the price and the trial's terms are on [keepmacawake.com](https://keepmacawake.com).
+
+1. Install Keep Mac Awake and use it. The free trial starts with your first session.
+2. When you are ready, choose **Buy** in the panel (or run `keepmacawake buy`). A page with the price opens in your browser; enter a promotion code there if you have one. Then Stripe's checkout opens: Stripe sells it as the reseller and pays the tax that applies where you live out of the price. A code that makes it free needs no card, only your e-mail.
 3. After paying, the page opens Keep Mac Awake and unlocks this Mac. There is no key to type. The purchase works offline from then on.
 
 - **Reinstalled, or a second user account on the same Mac?** Choose **Restore purchase**.
@@ -120,4 +153,4 @@ Each release lists the code hashes of the shipped services, so you can match the
 
 ## Terms
 
-Keep Mac Awake is provided as is, without warranty. See [terms of use](TERMS.md).
+Keep Mac Awake is provided as is, without warranty. Keep Mac Awake is not affiliated with Apple, Anthropic, OpenAI or Cursor. See [terms of use](TERMS.md).

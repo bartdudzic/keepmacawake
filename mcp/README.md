@@ -2,7 +2,7 @@
 
 <!-- mcp-name: com.keepmacawake/mcp -->
 
-This MCP server lets an AI agent use Keep Mac Awake, a macOS app that keeps a MacBook with Apple silicon awake with the lid closed during a session. It needs the app, which is installed separately and is a paid app with a free trial ([keepmacawake.com](https://keepmacawake.com/?utm_source=github&utm_medium=community&utm_campaign=readme&utm_content=mcp)). With it, the agent starts a timed session before long work, stops it when the work is done, and tells you when the app needs something from you, such as AC power or a purchase after the trial.
+This MCP server lets an AI agent use Keep Mac Awake, a macOS app that keeps a MacBook with Apple silicon awake with the lid closed during a session. It needs the app, which is installed separately and is a paid app with a free trial ([keepmacawake.com](https://keepmacawake.com)). With it, the agent starts a timed session before long work, stops it when the work is done, and tells you when the app needs something from you, such as AC power or a purchase after the trial. Why an agent needs it: a MacBook sleeps when you close the lid, and the agent's work stops with it ([keep AI agents running with the lid closed](https://keepmacawake.com/blog/run-ai-agents-overnight-macbook)).
 
 It works in any app that runs local MCP servers (Claude Desktop, Claude Code, Codex, Cursor, VS Code, Windsurf and others). If your agent takes plugins, the [Keep Mac Awake plugin](https://github.com/bartdudzic/keepmacawake/tree/main/plugins/keep-mac-awake) does the same with a skill and adds a session-start hook.
 
@@ -45,6 +45,8 @@ Claude Desktop, Cursor and other apps with a JSON configuration (`claude_desktop
 }
 ```
 
+The server is the npm package `keepmacawake-mcp` and is listed in the official MCP Registry as `com.keepmacawake/mcp`.
+
 If the app reports that `npx` is not found, give its full path, for example `/opt/homebrew/bin/npx`.
 
 From a clone of this repository instead of npm:
@@ -74,7 +76,7 @@ The server sends nothing anywhere. Its results become part of the agent's conver
 
 ## Troubleshooting
 
-- "Keep Mac Awake is not installed": install the app from [keepmacawake.com](https://keepmacawake.com/?utm_source=github&utm_medium=community&utm_campaign=readme&utm_content=mcp), or set `KEEPMACAWAKE_CLI` if the command is somewhere else.
+- "Keep Mac Awake is not installed": install the app from [keepmacawake.com](https://keepmacawake.com), or set `KEEPMACAWAKE_CLI` if the command is somewhere else.
 - "Its background service did not answer": open Keep Mac Awake from Applications. An MCP host that runs servers in a sandbox may block the connection to the service.
 - A session refused on battery: plug in AC power, or allow battery use in the menu bar panel.
 
