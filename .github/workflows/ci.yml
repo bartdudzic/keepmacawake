@@ -30,3 +30,21 @@ jobs:
         run: swift build
       - name: Test
         run: swift test
+
+  mcp:
+    name: MCP server
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: mcp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Test
+        # Against a fake keepmacawake command; nothing touches a real session.
+        run: |
+          npm ci
+          npm test

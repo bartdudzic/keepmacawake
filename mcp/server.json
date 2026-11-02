@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "com.keepmacawake/mcp",
+  "title": "Keep Mac Awake",
+  "description": "Keep a MacBook awake with the lid closed while an agent's long task runs (Keep Mac Awake app).",
+  "version": "1.0.0",
+  "websiteUrl": "https://keepmacawake.com",
+  "repository": {
+    "url": "https://github.com/bartdudzic/keepmacawake",
+    "source": "github",
+    "subfolder": "mcp"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "keepmacawake-mcp",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

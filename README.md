@@ -87,6 +87,12 @@ npx skills add bartdudzic/keepmacawake -g                                     # 
 
 Codex, GitHub Copilot CLI and Antigravity: see [Install](plugins/keep-mac-awake/README.md#install).
 
+For any app that runs local MCP servers (Claude Desktop, Cursor, VS Code and others), the [MCP server](mcp/README.md) gives the agent the same session controls as three tools:
+
+```sh
+claude mcp add keepmacawake -- npx -y keepmacawake-mcp
+```
+
 ## Buying
 
 1. Install Keep Mac Awake and use it. The 3-day trial starts with your first session; sessions last up to 8 hours.
@@ -103,7 +109,7 @@ On its own, Keep Mac Awake goes online only for updates: a daily check with keep
 
 ## Source code
 
-The system services, the installer scripts and their tests are in this repository: everything that runs with administrator rights. The source is available under [PolyForm Shield 1.0.0](LICENSE): you can read, build and check it, but not use it in a competing product. It is not open source in the OSI sense. The menu bar app is not included. The [agent plugin](plugins/keep-mac-awake) is here too, under the [MIT License](plugins/keep-mac-awake/LICENSE); it only calls the `keepmacawake` command.
+The system services, the installer scripts and their tests are in this repository: everything that runs with administrator rights. The source is available under [PolyForm Shield 1.0.0](LICENSE): you can read, build and check it, but not use it in a competing product. It is not open source in the OSI sense. The menu bar app is not included. The [agent plugin](plugins/keep-mac-awake) and the [MCP server](mcp) are here too, under the MIT License ([plugin](plugins/keep-mac-awake/LICENSE), [server](mcp/LICENSE)); they only call the `keepmacawake` command.
 
 Each release lists the code hashes of the shipped services, so you can match them to a build from the tagged source.
 

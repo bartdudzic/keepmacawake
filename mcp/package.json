@@ -1,0 +1,54 @@
+{
+  "name": "keepmacawake-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Keep Mac Awake: lets an AI agent keep a MacBook awake with the lid closed while long tasks run, through the keepmacawake command of the Keep Mac Awake app.",
+  "mcpName": "com.keepmacawake/mcp",
+  "type": "module",
+  "bin": {
+    "keepmacawake-mcp": "bin/keepmacawake-mcp.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "server.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "zod": "^4.2.0"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "macos",
+    "macbook",
+    "lid-closed",
+    "keep-awake",
+    "sleep",
+    "ai-agents"
+  ],
+  "homepage": "https://keepmacawake.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bartdudzic/keepmacawake.git",
+    "directory": "mcp"
+  },
+  "bugs": {
+    "email": "hi@keepmacawake.com"
+  },
+  "author": "Bart Dudzic <hi@keepmacawake.com> (https://keepmacawake.com)",
+  "license": "MIT",
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ]
+}
