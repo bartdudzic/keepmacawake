@@ -115,7 +115,7 @@ gemini extensions install https://github.com/bartdudzic/keepmacawake         # G
 npx skills add bartdudzic/keepmacawake -g                                     # any agent that reads Agent Skills
 ```
 
-Codex, GitHub Copilot CLI and Antigravity: see [Install](plugins/keep-mac-awake/README.md#install). The skill is also on the website: [SKILL.md](https://keepmacawake.com/skill/keepmacawake/SKILL.md), with a guide for agents in [agents.md](https://keepmacawake.com/agents.md) and [llms.txt](https://keepmacawake.com/llms.txt).
+Codex, GitHub Copilot CLI and Antigravity: see [Install](plugins/keep-mac-awake/README.md#install). Kiro: the same skill as a [power](powers/keep-mac-awake/README.md). The skill is also on the website: [SKILL.md](https://keepmacawake.com/skill/keepmacawake/SKILL.md), with a guide for agents in [agents.md](https://keepmacawake.com/agents.md) and [llms.txt](https://keepmacawake.com/llms.txt).
 
 For any app that runs local MCP servers (Claude Desktop, Cursor, VS Code and others), the [MCP server](mcp/README.md) gives the agent the same session controls as three tools. It is the npm package [`keepmacawake-mcp`](https://www.npmjs.com/package/keepmacawake-mcp), listed in the official MCP Registry as `com.keepmacawake/mcp`.
 

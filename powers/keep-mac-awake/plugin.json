@@ -1,0 +1,27 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "keep-mac-awake",
+  "version": "1.0.6",
+  "description": "Keep Mac Awake for your agent: keeps a MacBook with Apple silicon awake with the lid closed while long tasks run, through the keepmacawake command of the Keep Mac Awake app. It starts a timed session before long work and stops it after. Requires the Keep Mac Awake app, with a free trial.",
+  "author": {
+    "name": "Bart Dudzic",
+    "email": "hi@keepmacawake.com",
+    "url": "https://keepmacawake.com"
+  },
+  "homepage": "https://keepmacawake.com",
+  "repository": "https://github.com/bartdudzic/keepmacawake",
+  "license": "MIT",
+  "keywords": [
+    "keep mac awake",
+    "keepmacawake",
+    "keep awake",
+    "lid closed",
+    "close the lid",
+    "macbook",
+    "sleep",
+    "overnight",
+    "long-running tasks",
+    "step away",
+    "macos"
+  ]
+}
