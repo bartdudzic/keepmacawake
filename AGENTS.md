@@ -9,6 +9,7 @@ This repository is the public core of Keep Mac Awake: the root helper and watchd
 - No network code. No logging of user activity.
 - The agent plugin and the MCP server only call the public `keepmacawake` command. The server has three tools (status, start, stop), no network code and no telemetry; test it with `npm ci && npm test` in `mcp/`, which uses a fake command. Keep `version` equal in `mcp/package.json` and `mcp/server.json`.
 - The agent plugin only calls the public `keepmacawake` command. Its hook stays read only: no network, no start, stop or settings change, and it never reads the user's prompts or files. Check it with `claude plugin validate --strict plugins/keep-mac-awake` and `claude plugin validate --strict .`.
+- The integrations in `integrations/` (an Alfred workflow, Apple Shortcuts and a Hammerspoon Spoon, MIT) only call the public `keepmacawake` command too, with `start`, `status` and `stop`. Their tests use a fake command and never run the real one: `integrations/alfred/test.sh`, `integrations/shortcuts/test.sh` and `lua test.lua` in `integrations/hammerspoon`.
 - Every commit here is an export from the maintainer's development tree. Do not commit, tag or push here by hand, and never force push: a change made here is lost at the next export.
 - Pull requests from others are not accepted for now; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
