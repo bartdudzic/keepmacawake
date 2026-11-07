@@ -36,7 +36,14 @@ done
 # Only this app's executable path matches, never another program of that name.
 TASK_APP_PATTERN='^/Applications/Keep Mac Awake\.app/Contents/MacOS/Keep Mac Awake( |$)'
 TASK_RELAUNCH="$TASK_STATE/relaunch-app"
-/bin/rm -f "$TASK_RELAUNCH"
+TASK_FIRST_INSTALL="$TASK_STATE/first-install"
+/bin/rm -f "$TASK_RELAUNCH" "$TASK_FIRST_INSTALL"
+# A first installation: no app at its path yet. postinstall opens the new app for the
+# user at the console, so a new user sees its panel instead of nothing.
+if [ ! -e '/Applications/Keep Mac Awake.app' ]; then
+    TASK_CONSOLE_UID=$(/usr/bin/stat -f %u /dev/console)
+    [ "$TASK_CONSOLE_UID" = 0 ] || echo "$TASK_CONSOLE_UID" > "$TASK_FIRST_INSTALL"
+fi
 if /usr/bin/pgrep -f "$TASK_APP_PATTERN" >/dev/null 2>&1; then
     # An update replaces a running app; postinstall opens the new one for the
     # user at the console, so an update from the panel brings the panel back.

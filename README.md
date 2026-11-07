@@ -45,7 +45,7 @@ More guides: [keepmacawake.com/blog](https://keepmacawake.com/blog/).
 
 ## What it does not do
 
-- A session never starts by itself, at login or on a schedule.
+- A session never starts by itself, at login or on a schedule. The app opens at login, so its icon is there after a restart, but opening it never starts a session; turn that off under More (…) in the panel or in System Settings > General > Login Items & Extensions.
 - It does not keep Wi-Fi or other network connections alive, and it does not wake a Mac that is already asleep.
 - It does not read your files, screen, clipboard or other apps.
 - It needs no special permissions such as Accessibility or Full Disk Access, and no changes to SIP, Gatekeeper or FileVault.
@@ -57,14 +57,14 @@ More guides: [keepmacawake.com/blog](https://keepmacawake.com/blog/).
 
 ## Install
 
-1. Download `KeepMacAwake-1.0.6-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
+1. Download `KeepMacAwake-1.0.7-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
 2. Optional: check the download in Terminal. The result must match the `.sha256` file of the release.
 
    ```sh
-   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.6-arm64.pkg
+   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.7-arm64.pkg
    ```
 
-3. Open the package and follow the steps. Then click the icon in the menu bar and press the power button.
+3. Open the package and follow the steps. When it is done, Keep Mac Awake opens and shows its panel below the menu bar: press the power button. Later, click its icon in the menu bar, or open the app again from Applications.
 
 The packages are signed with Developer ID and notarized by Apple.
 
@@ -92,7 +92,7 @@ Download the new package and open it, or run the install command again. The pack
 
 ## Uninstall
 
-Open `KeepMacAwake-Uninstall-1.0.6-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
+Open `KeepMacAwake-Uninstall-1.0.7-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
 
 ## Command line
 

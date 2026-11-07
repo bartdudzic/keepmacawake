@@ -34,17 +34,24 @@ else
     { [ -d /usr/local/bin ] || /bin/mkdir -p /usr/local/bin; } && /bin/ln -s "$TASK_CLI_TARGET" "$TASK_CLI_LINK" ||
         echo 'Could not link /usr/local/bin/keepmacawake; the tool is inside the app.' >&2
 fi
-# The app was running before the update: open the new one for the same user,
-# still at the console. Opening the app never starts a session.
+# The app was running before the update, or this is a first installation: open the
+# app for the same user, still at the console. After a first installation it shows its
+# panel. Opening the app never starts a session.
 TASK_RELAUNCH='/Library/Application Support/KeepMacAwake/relaunch-app'
+TASK_FIRST_INSTALL='/Library/Application Support/KeepMacAwake/first-install'
+TASK_OPEN_UID=''
+TASK_OPEN_ARGS=()
 if [ -f "$TASK_RELAUNCH" ] && [ ! -L "$TASK_RELAUNCH" ]; then
-    TASK_RELAUNCH_UID=$(/usr/bin/head -c 16 "$TASK_RELAUNCH")
-    /bin/rm -f "$TASK_RELAUNCH"
-    if [ "$TASK_RELAUNCH_UID" = "$TASK_CONSOLE_UID" ] && [ "$TASK_CONSOLE_UID" != 0 ]; then
-        /bin/launchctl asuser "$TASK_CONSOLE_UID" /usr/bin/sudo -u "#$TASK_CONSOLE_UID" \
-            /usr/bin/open '/Applications/Keep Mac Awake.app' >/dev/null 2>&1 ||
-            echo 'Open Keep Mac Awake from Applications to see its panel again.' >&2
-    fi
+    TASK_OPEN_UID=$(/usr/bin/head -c 16 "$TASK_RELAUNCH")
+elif [ -f "$TASK_FIRST_INSTALL" ] && [ ! -L "$TASK_FIRST_INSTALL" ]; then
+    TASK_OPEN_UID=$(/usr/bin/head -c 16 "$TASK_FIRST_INSTALL")
+    TASK_OPEN_ARGS=(--args --after-install)
+fi
+/bin/rm -f "$TASK_RELAUNCH" "$TASK_FIRST_INSTALL"
+if [ -n "$TASK_OPEN_UID" ] && [ "$TASK_OPEN_UID" = "$TASK_CONSOLE_UID" ] && [ "$TASK_CONSOLE_UID" != 0 ]; then
+    /bin/launchctl asuser "$TASK_CONSOLE_UID" /usr/bin/sudo -u "#$TASK_CONSOLE_UID" \
+        /usr/bin/open '/Applications/Keep Mac Awake.app' ${TASK_OPEN_ARGS[@]+"${TASK_OPEN_ARGS[@]}"} >/dev/null 2>&1 ||
+        echo 'Open Keep Mac Awake from Applications to see its panel.' >&2
 fi
 # An update the system service installed leaves its checked copy here.
 /bin/rm -rf '/Library/Application Support/KeepMacAwake/update'

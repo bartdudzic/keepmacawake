@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.7
+
+- After a first installation the installer opens Keep Mac Awake, and its first launch shows the panel by itself with a short welcome instead of the offer and the agent card. When the menu bar icon is hidden (a full menu bar, the camera housing, or the item hidden in System Settings), the panel opens below the middle of the menu bar; opening the app again does the same. An update of an app that was not running still opens nothing.
+- The app adds itself to Open at Login once per user (`SMAppService.mainApp`), at its first launch of this version, and never again after you turn it off. **Open at Login** under More (…) in the panel turns it off or on. Opening the app at login never starts a session.
+- 1.0.4 to 1.0.6 install 1.0.7 by themselves when no session runs.
+
 ## 1.0.6
 
 - Signed with new Developer ID certificates of the same developer, which spell the developer's legal name correctly.
