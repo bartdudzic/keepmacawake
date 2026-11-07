@@ -1,0 +1,50 @@
+{
+  "name": "pi-keepmacawake",
+  "version": "1.0.0",
+  "description": "Pi extension that keeps a Mac awake, also with the lid closed, through the Keep Mac Awake app: /awake start for a timed session, or opt in to a session with each Pi run.",
+  "type": "module",
+  "main": "src/index.js",
+  "files": [
+    "src/",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "pi": {
+    "extensions": [
+      "./src/index.js"
+    ]
+  },
+  "scripts": {
+    "test": "KEEPMACAWAKE_CLI=/nonexistent/keepmacawake PI_CODING_AGENT_DIR=/nonexistent/pi-agent node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "pi",
+    "keep-awake",
+    "awake",
+    "sleep",
+    "prevent-sleep",
+    "lid-closed",
+    "caffeinate",
+    "macos",
+    "macbook",
+    "ai-agents",
+    "keepmacawake"
+  ],
+  "homepage": "https://keepmacawake.com/?utm_source=pi-gallery&utm_medium=referral&utm_campaign=pi-package&utm_content=home",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bartdudzic/keepmacawake.git",
+    "directory": "integrations/pi"
+  },
+  "bugs": {
+    "email": "hi@keepmacawake.com"
+  },
+  "author": "Keep Mac Awake <hi@keepmacawake.com> (https://keepmacawake.com)",
+  "license": "MIT"
+}

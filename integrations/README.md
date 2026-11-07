@@ -7,5 +7,6 @@ Ways to start, check and stop Keep Mac Awake sessions from the automation tools 
 | Alfred | [alfred](alfred/README.md) | The `awake` keyword: start for 1 hour, 8 hours, any number of hours or with no time limit, status, stop |
 | Apple Shortcuts | [shortcuts](shortcuts/README.md) | Shortcuts to start 8 hours, show the status and stop, for the menu bar, Spotlight and Siri |
 | Hammerspoon | [hammerspoon](hammerspoon/README.md) | `KeepMacAwake.spoon`: hotkeys and Lua methods for start, status and stop |
+| Pi coding agent | [pi](pi/README.md) | `pi-keepmacawake` on npm: keeps the Mac awake while Pi works, with timed sessions; the `/awake` command |
 
 For AI agents, see the [plugin](../plugins/keep-mac-awake/README.md) and the [MCP server](../mcp/README.md). Every command and answer is in the [command line reference](../docs/COMMAND-LINE.md).

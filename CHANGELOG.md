@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.8
+
+- A new menu bar panel. The length is chosen on a crescent dial (drag its end, type any whole number of hours, or Option-arrow by one hour) or with the presets **4h**, **8h**, **24h** and **No limit** (Command-1 to 4); the trial's 8-hour cap puts a lock on 24h and No limit. The panel's sky shows the state: day with no session, a starry night only while the helper's confirmation is fresh, dusk while a session waits for AC power, and dawn after a session ended, with how long it kept the Mac awake, the planned length, time paused without AC power and why it ended. That account lives only in the coordinator's memory and is gone after a restart; nothing about sessions is written to disk.
+- The menu bar icon is a moon that shows on, off, waiting for AC power and attention. Right-click or Control-click opens a quick menu with the same presets; Option-click starts a session with the last length, or asks before turning one off.
+- **How It Works** under More (…): the live state of the sleep setting, what the helper and the watchdog do, and what leaves the Mac.
+- The app carries its uninstaller (`Contents/Resources/KeepMacAwake-Uninstall.pkg`, the same file as on this release): **Uninstall Keep Mac Awake…** under More (…) opens it in Installer, with no download.
+- Turning a session off asks once, from the panel, the quick menu, Option-click and Quit alike.
+- New installer and uninstaller pages.
+- An automatic update waits while a session that ended within the last 12 hours has not been shown in the panel, so its restart does not lose that account. **Install** in the panel never waits.
+- 1.0.4 to 1.0.7 install 1.0.8 by themselves when no session runs.
+
 ## 1.0.7
 
 - After a first installation the installer opens Keep Mac Awake, and its first launch shows the panel by itself with a short welcome instead of the offer and the agent card. When the menu bar icon is hidden (a full menu bar, the camera housing, or the item hidden in System Settings), the panel opens below the middle of the menu bar; opening the app again does the same. An update of an app that was not running still opens nothing.

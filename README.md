@@ -26,7 +26,7 @@ Yes, with the agent's own remote feature (such as Claude Code Remote Control, Co
 
 ### Is it safe to run a MacBook with the lid closed?
 
-Yes, if it has air around it. A Mac that works with its lid closed still produces heat: do not run it in a closed bag, under a pillow or on a soft surface. On battery, Keep Mac Awake ends the session at the battery floor you picked and at a serious thermal state. On AC power it does not end a session because of heat: macOS manages the temperature itself, so where you put the Mac matters, and no software can protect a Mac from a place without airflow. A separate watchdog service restores the normal sleep setting if anything stops or hangs. Guide: [heat and battery with the lid closed](https://keepmacawake.com/blog/macbook-lid-closed-heat-and-battery).
+Yes, if it has air around it. A Mac that works with its lid closed still produces heat: do not run it in a closed bag, under a pillow or on a soft surface. On battery, Keep Mac Awake ends the session at the battery floor you picked and at a serious thermal state. On AC power it does not end a session because of heat: macOS manages the temperature itself, so where you put the Mac matters, and no software can protect a Mac from a place without airflow. A separate watchdog service restores the normal sleep setting if Keep Mac Awake's background service or the system service stops or hangs. Guide: [heat and battery with the lid closed](https://keepmacawake.com/blog/macbook-lid-closed-heat-and-battery).
 
 ### How is it different from caffeinate or pmset?
 
@@ -36,11 +36,11 @@ More guides: [keepmacawake.com/blog](https://keepmacawake.com/blog/).
 
 ## What it does
 
-- **One button in the menu bar.** Start a session with no limit, for 1 hour, 8 hours or any number of hours up to 168. The icon shows whether sleep prevention is confirmed.
+- **One button in the menu bar.** Start a session for 4, 8 or 24 hours, with no limit, or for any number of hours up to 168. The icon shows whether sleep prevention is confirmed.
 - **AC power by default.** If you unplug, the session pauses and continues when AC power returns. Optionally it runs on battery above a level you choose (20% by default) and ends there.
 - **Display off with the lid closed.** The built-in display goes dark when you close the lid, even if another app asked to keep it on.
 - **A command for Terminal and AI agents.** `keepmacawake start --hours 8`, `status`, `stop`, each with `--json`.
-- **Safe by design.** A separate supervising service restores the normal sleep setting if anything stops or hangs. Quitting the app always restores it. A battery session also ends when the Mac gets too hot.
+- **Safe by design.** A separate supervising service restores the normal sleep setting if Keep Mac Awake's background service or the system service stops or hangs. Quitting the app always restores it. A battery session also ends when the Mac gets too hot.
 - **Almost nothing leaves your Mac.** No accounts, analytics or logs. On its own the app only checks for a new version once a day, with nothing about your Mac in the request, and installs a new version by itself when no session runs; Restore purchase happens when you ask.
 
 ## What it does not do
@@ -57,11 +57,11 @@ More guides: [keepmacawake.com/blog](https://keepmacawake.com/blog/).
 
 ## Install
 
-1. Download `KeepMacAwake-1.0.7-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
+1. Download `KeepMacAwake-1.0.8-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
 2. Optional: check the download in Terminal. The result must match the `.sha256` file of the release.
 
    ```sh
-   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.7-arm64.pkg
+   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.8-arm64.pkg
    ```
 
 3. Open the package and follow the steps. When it is done, Keep Mac Awake opens and shows its panel below the menu bar: press the power button. Later, click its icon in the menu bar, or open the app again from Applications.
@@ -92,7 +92,7 @@ Download the new package and open it, or run the install command again. The pack
 
 ## Uninstall
 
-Open `KeepMacAwake-Uninstall-1.0.7-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
+Choose **Uninstall Keep Mac Awake…** under More (…) in the panel: it opens the uninstaller that comes with the app, with nothing to download. Or open `KeepMacAwake-Uninstall-1.0.8-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
 
 ## Command line
 
@@ -126,7 +126,7 @@ codex mcp add keepmacawake -- npx -y keepmacawake-mcp    # Codex
 
 ## Integrations
 
-Start, check and stop sessions from [Alfred](integrations/alfred/README.md) (the `awake` keyword), [Apple Shortcuts](integrations/shortcuts/README.md) and [Hammerspoon](integrations/hammerspoon/README.md). Each one only runs the `keepmacawake` command, under the MIT License; see [integrations](integrations/README.md).
+Start, check and stop sessions from [Alfred](integrations/alfred/README.md) (the `awake` keyword), [Apple Shortcuts](integrations/shortcuts/README.md) and [Hammerspoon](integrations/hammerspoon/README.md), and keep the Mac awake while the [Pi](integrations/pi/README.md) coding agent works (`pi install npm:pi-keepmacawake`). Each one only runs the `keepmacawake` command, under the MIT License; see [integrations](integrations/README.md).
 
 ## Buying
 
@@ -146,7 +146,7 @@ On its own, Keep Mac Awake goes online only for updates: a daily check with keep
 
 ## Source code
 
-The system services, the installer scripts and their tests are in this repository: everything that runs with administrator rights. The source is available under [PolyForm Shield 1.0.0](LICENSE): you can read, build and check it, but not use it in a competing product. It is not open source in the OSI sense. The menu bar app is not included. The [agent plugin](plugins/keep-mac-awake), the [MCP server](mcp) and the [integrations](integrations) for Alfred, Shortcuts and Hammerspoon are here too, under the MIT License ([plugin](plugins/keep-mac-awake/LICENSE), [server](mcp/LICENSE), [integrations](integrations/README.md)); they only call the `keepmacawake` command.
+The system services, the installer scripts and their tests are in this repository: everything that runs with administrator rights. The source is available under [PolyForm Shield 1.0.0](LICENSE): you can read, build and check it, but not use it in a competing product. It is not open source in the OSI sense. The menu bar app is not included. The [agent plugin](plugins/keep-mac-awake), the [MCP server](mcp) and the [integrations](integrations) for Alfred, Shortcuts, Hammerspoon and Pi are here too, under the MIT License ([plugin](plugins/keep-mac-awake/LICENSE), [server](mcp/LICENSE), [integrations](integrations/README.md)); they only call the `keepmacawake` command.
 
 Each release lists the code hashes of the shipped services, so you can match them to a build from the tagged source.
 
