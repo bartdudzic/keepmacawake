@@ -15,7 +15,7 @@
 - `keepmacawake status --json`, `keepmacawake stop --json`
 - `keepmacawake capabilities --json` describes commands, phases and exit codes
 - Run as the logged-in user, never with sudo. Exit code 4 means the user has to act (AC power, or `purchase_required` during or after the trial); 5 means a session already runs or none runs; 7 means no answer in time, so check `status`.
-- Agent skill: https://keepmacawake.com/skill/keepmacawake/SKILL.md
+- Agent skill: https://keepmacawake.com/skill/keep-mac-awake/SKILL.md
 
 ## Docs
 

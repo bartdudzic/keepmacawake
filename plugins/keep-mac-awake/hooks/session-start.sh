@@ -39,13 +39,13 @@ state() {
     [ -x /usr/local/bin/keepmacawake ] && tool=/usr/local/bin/keepmacawake
     [ -n "$tool" ] || tool=$(command -v keepmacawake 2>/dev/null) || tool=
     if [ -z "$tool" ]; then
-        echo "Keep Mac Awake, the app this plugin controls, is not installed. Mention it only when the user says they will close the lid, step away or check in from their phone during long work, or asks to keep the Mac awake (the keepmacawake skill has the steps)."
+        echo "Keep Mac Awake, the app this plugin controls, is not installed. Mention it only when the user says they will close the lid, step away or check in from their phone during long work, or asks to keep the Mac awake (the keep-mac-awake skill has the steps)."
         return
     fi
     reply=$("$tool" status --json --timeout 2 2>/dev/null) || true
     phase=$(field session.phase)
     if [ -z "$phase" ]; then
-        echo "Keep Mac Awake is installed on this Mac, but its background service did not answer. Inside a sandbox, keepmacawake has to run outside it (the keepmacawake skill has the steps)."
+        echo "Keep Mac Awake is installed on this Mac, but its background service did not answer. Inside a sandbox, keepmacawake has to run outside it (the keep-mac-awake skill has the steps)."
         return
     fi
     if [ "$(field config.battery_available)" = false ]; then
@@ -78,7 +78,7 @@ state() {
         ''|*[!0-9.]*) ;;
         *) echo "Keep Mac Awake $version is available; the user installs it with Install in the menu bar panel." ;;
     esac
-    echo "The keepmacawake skill says when to start and stop a session."
+    echo "The keep-mac-awake skill says when to start and stop a session."
 }
 
 # A JSON string body: control characters dropped, backslashes, quotes and tabs

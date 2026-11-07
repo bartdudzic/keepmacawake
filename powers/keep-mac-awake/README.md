@@ -2,7 +2,7 @@
 
 This power teaches the Kiro agent to use Keep Mac Awake, a macOS app that keeps a MacBook with Apple silicon awake with the lid closed during a session. It needs the app, which is installed separately and starts with a free trial ([keepmacawake.com](https://keepmacawake.com)). With it, the agent starts a timed session before long work, stops it when the work is done, and tells you when the app needs something from you, such as AC power. Why an agent needs it: a MacBook sleeps when you close the lid, and the agent's work stops with it ([keep AI agents running with the lid closed](https://keepmacawake.com/blog/run-ai-agents-overnight-macbook)).
 
-The power is in the [Agent Plugins](https://agent-plugins.org) format: a `plugin.json` manifest and one skill, `skills/keepmacawake/SKILL.md`, the same skill as the [Keep Mac Awake plugin](../../plugins/keep-mac-awake/README.md) for Claude Code, Codex, Cursor and Copilot CLI. It has no hook and no MCP server. Kiro activates it when your request mentions keeping the Mac awake, closing the lid or long work you leave running.
+The power is in the [Agent Plugins](https://agent-plugins.org) format: a `plugin.json` manifest and one skill, `skills/keep-mac-awake/SKILL.md`, the same skill as the [Keep Mac Awake plugin](../../plugins/keep-mac-awake/README.md) for Claude Code, Codex, Cursor and Copilot CLI. It has no hook and no MCP server. Kiro activates it when your request mentions keeping the Mac awake, closing the lid or long work you leave running.
 
 The agent starts timed sessions on its own and tells you in one line. It always asks before a session without a time limit, battery use, installing the app and buying.
 
