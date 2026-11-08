@@ -27,7 +27,7 @@ A closed Mac that stays awake still makes heat: keep it ventilated, on a hard su
 
 ## Why an app for the closed lid
 
-A MacBook goes to sleep when you close its lid, and Pi stops with it. caffeinate with no flag, `-i`, `-d` or `-m` only prevents idle sleep, so the lid still puts the Mac to sleep; `-s` keeps a closed MacBook running only on AC power, and it sleeps once you unplug it ([caffeinate and the closed lid](https://keepmacawake.com/blog/caffeinate-lid-closed?utm_source=pi-gallery&utm_medium=referral&utm_campaign=pi-package&utm_content=readme-caffeinate)). Keep Mac Awake is built for the closed lid: it keeps the Mac awake for a session, on AC power by default and on battery too if you allow it in its panel, and a watchdog puts normal sleep back if anything stops.
+A MacBook goes to sleep when you close its lid, and Pi stops with it. caffeinate with no flag, `-i`, `-d` or `-m` only prevents idle sleep, so the lid still puts the Mac to sleep; `-s` keeps a closed MacBook running only on AC power, and it sleeps once you unplug it ([caffeinate and the closed lid](https://keepmacawake.com/blog/caffeinate-lid-closed?utm_source=pi-gallery&utm_medium=referral&utm_campaign=pi-package&utm_content=readme-caffeinate)). Keep Mac Awake is built for the closed lid: it keeps the Mac awake for a session, on AC power by default and on battery too if you allow it in its panel, and a separate watchdog service puts normal sleep back if Keep Mac Awake's background service or the system service stops or hangs.
 
 ## Commands
 
