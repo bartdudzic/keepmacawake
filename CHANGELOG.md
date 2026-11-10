@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.10
+
+- **Turn Off** ends the session at once, with no question, from the panel, the dial's stem, the quick menu and Option-click. VoiceOver says when the Mac is off. Quitting with a session running still asks.
+- The dial takes a press anywhere on its crescent: the handle moves there and the drag goes on from it. The handle is easier to grab and drags from where it is, and every press works on the first click.
+- Clicking the menu bar icon while the panel is open closes it. Esc and clicks elsewhere still close it too.
+- **Mute sound when lid closes**, a new switch under Run on battery and under More (…), off by default: closing the lid during a session mutes the sound until the lid opens, so an agent's notifications stay quiet at night. Only sound that was playing is muted, and only that comes back; with an external display on nothing is muted. `keepmacawake config set --mute-on-lid-close on|off` sets it too.
+- 1.0.4 to 1.0.9 install 1.0.10 by themselves when no session runs.
+
 ## 1.0.9
 
 - The first update check after a new installation now adds `?first=1`, as described since 1.0.6. The coordinator built the battery settings before the update check, and they save `allowsBattery` and `minimumBatteryPercent`, which the check read as traces of an earlier installation, so 1.0.6 to 1.0.8 never sent the flag. The coordinator now reads whether the installation is new before anything writes the preferences. Nothing else changes in what is sent: no identifier, no version, nothing about the Mac.
