@@ -16,6 +16,7 @@ The session belongs to a per-user background service (the coordinator). The tool
 | `keepmacawake config get` | Shows the settings: battery use for the next session and the daily update check. |
 | `keepmacawake config set --battery allowed\|ac-only [--min-battery N]` | Changes the battery settings. The threshold is 1 to 100%. A running session keeps its own settings. On a Mac without a built-in battery, allowing battery use or setting a threshold is refused (exit code 4): sessions there need AC power. |
 | `keepmacawake config set --update-check daily\|off` | Turns the daily update check on (the default) or off. The panel has no switch for it. |
+| `keepmacawake config set --mute-on-lid-close on\|off` | Since 1.0.10: with `on`, closing the lid during a session mutes the sound (only what plays and was not muted already) until the lid opens, so notifications stay quiet at night. Not while an external display is on. Applies at once, also to a running session; the same switch as Mute sound when lid closes in the panel. A Mac without a built-in battery has no lid and accepts only `off`. |
 | `keepmacawake app launch` | Opens the menu bar app. |
 | `keepmacawake app quit` | Ends the session, then quits the menu bar app. |
 | `keepmacawake buy` | Opens the purchase page for this Mac in the browser and prints the link. |
@@ -34,7 +35,7 @@ Options: `--json`, `--agent` (only with `status`, not with `--json`), `--timeout
 With `--json`, stdout carries exactly one JSON object on one line; diagnostics go to stderr. Keys are stable; new keys may be added.
 
 ```json
-{"access":{"mac_id":"0123456789abcdef0123456789abcdef","max_hours":null,"purchase":null,"state":"purchased","trial_ends_at":null,"trial_seconds_left":null,"trial_started":true},"app_version":"1.0.0","config":{"battery":"ac-only","battery_available":true,"min_battery_percent":20,"update_check":"daily"},"protocol_version":"2","result":"ok","schema_version":1,"session":{"confirmed":true,"hours":8,"last_end_reason":null,"live":true,"message":"Sleep prevention is on.","min_battery_percent":null,"phase":"active","remaining_seconds":28734,"unlimited":false},"update":{"available_version":null,"current_version":"1.0.0","install_command":null}}
+{"access":{"mac_id":"0123456789abcdef0123456789abcdef","max_hours":null,"purchase":null,"state":"purchased","trial_ends_at":null,"trial_seconds_left":null,"trial_started":true},"app_version":"1.0.0","config":{"battery":"ac-only","battery_available":true,"min_battery_percent":20,"mute_on_lid_close":"off","update_check":"daily"},"protocol_version":"2","result":"ok","schema_version":1,"session":{"confirmed":true,"hours":8,"last_end_reason":null,"live":true,"message":"Sleep prevention is on.","min_battery_percent":null,"phase":"active","remaining_seconds":28734,"unlimited":false},"update":{"available_version":null,"current_version":"1.0.0","install_command":null}}
 ```
 
 | Key | Meaning |
@@ -49,6 +50,7 @@ With `--json`, stdout carries exactly one JSON object on one line; diagnostics g
 | `config.battery`, `config.min_battery_percent` | Settings for the next session |
 | `config.battery_available` | False on a Mac without a built-in battery: `config.battery` is then always `ac-only` and the battery settings cannot be changed |
 | `config.update_check` | `daily` (the default) or `off` |
+| `config.mute_on_lid_close` | `on` or `off` (the default); since 1.0.10 |
 | `update.current_version`, `update.available_version` | This version, and a newer one found by the last update check, or null |
 | `update.install_command` | With a newer version: `curl -fsSL https://keepmacawake.com/install.sh \| sh`, for a person to run in Terminal; it installs it after the administrator password and ends a running session. Since 1.0.4 the app installs a newer version by itself when no session runs. Null otherwise. `update` itself is null from a build without a release version |
 | `access.state` | `purchased`, `trial` or `trialEnded` |
