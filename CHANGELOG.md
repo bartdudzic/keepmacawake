@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.9
+
+- The first update check after a new installation now adds `?first=1`, as described since 1.0.6. The coordinator built the battery settings before the update check, and they save `allowsBattery` and `minimumBatteryPercent`, which the check read as traces of an earlier installation, so 1.0.6 to 1.0.8 never sent the flag. The coordinator now reads whether the installation is new before anything writes the preferences. Nothing else changes in what is sent: no identifier, no version, nothing about the Mac.
+- 1.0.4 to 1.0.8 install 1.0.9 by themselves when no session runs.
+
 ## 1.0.8
 
 - A new menu bar panel. The length is chosen on a crescent dial (drag its end, type any whole number of hours, or Option-arrow by one hour) or with the presets **4h**, **8h**, **24h** and **No limit** (Command-1 to 4); the trial's 8-hour cap puts a lock on 24h and No limit. The panel's sky shows the state: day with no session, a starry night only while the helper's confirmation is fresh, dusk while a session waits for AC power, and dawn after a session ended, with how long it kept the Mac awake, the planned length, time paused without AC power and why it ended. That account lives only in the coordinator's memory and is gone after a restart; nothing about sessions is written to disk.

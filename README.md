@@ -57,14 +57,14 @@ More guides: [keepmacawake.com/blog](https://keepmacawake.com/blog/).
 
 ## Install
 
-1. Download `KeepMacAwake-1.0.8-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
+1. Download `KeepMacAwake-1.0.9-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
 2. Optional: check the download in Terminal. The result must match the `.sha256` file of the release.
 
    ```sh
-   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.8-arm64.pkg
+   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.9-arm64.pkg
    ```
 
-3. Open the package and follow the steps. When it is done, Keep Mac Awake opens and shows its panel below the menu bar: press the power button. Later, click its icon in the menu bar, or open the app again from Applications.
+3. Open the package and follow the steps. When it is done, Keep Mac Awake opens and shows its panel below the menu bar: pick how long and press Keep Awake. Later, click its icon in the menu bar, or open the app again from Applications.
 
 The packages are signed with Developer ID and notarized by Apple.
 
@@ -92,7 +92,7 @@ Download the new package and open it, or run the install command again. The pack
 
 ## Uninstall
 
-Choose **Uninstall Keep Mac Awake…** under More (…) in the panel: it opens the uninstaller that comes with the app, with nothing to download. Or open `KeepMacAwake-Uninstall-1.0.8-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
+Choose **Uninstall Keep Mac Awake…** under More (…) in the panel: it opens the uninstaller that comes with the app, with nothing to download. Or open `KeepMacAwake-Uninstall-1.0.9-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
 
 ## Command line
 

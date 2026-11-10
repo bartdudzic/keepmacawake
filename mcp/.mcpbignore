@@ -1,0 +1,4 @@
+# Left out of the Claude Desktop extension (scripts/build-mcpb.sh): the tests and the container build.
+test/
+Dockerfile
+server.json
