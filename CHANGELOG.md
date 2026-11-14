@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.11
+
+- On a MacBook on battery, Run on battery turns itself on with the 20% threshold (or the threshold already chosen) when the user has never set it, so the first session starts with one click from the panel or with `keepmacawake start`. The coordinator applies it when the panel or the command line asks for the state or a Start, while no session runs; never on a Mac without a built-in battery and never over the user's own on or off. The preferences record that choice as `allowsBatteryChosen`; an installation from before 1.0.11 keeps its stored switch as the user's choice, so an existing off stays off. The helper and the watchdog are unchanged: a battery session still ends at the threshold, on unknown readings and at a serious thermal state, and normal sleep returns when it ends.
+- The first update check after the Mac's first session adds `?session=1` once, the same on every Mac and only with the update check on, so the site counts trial starts as well as first launches. Like `first=1`, it carries nothing about the Mac. A Mac whose first session ran before 1.0.11 never sends it. Until that check is answered, the preferences keep `updateFirstSessionPending`.
+- In the trial's last 24 hours the panel shows a card that the trial ends soon, with **Buy**, when it is opened. No notification; the panel never opens by itself for it.
+- A battery refusal of `keepmacawake start` names `keepmacawake config set --battery allowed` (Run on battery off) or `keepmacawake config set --min-battery` (at or below the threshold), in the text and in the JSON error message.
+- `status --json` and `config get --json` carry `config.battery_chosen`: true when the user set Run on battery themselves, on or off; false while it is unset or was turned on by the default, and on a Mac without a built-in battery. An additive key: `schema_version` and `protocol_version` stay as they are, and a reply from before 1.0.11 decodes as chosen.
+- A failed activation or restore is titled "Purchase not found" only for the server's not-found answer, otherwise "Couldn't unlock". **Restore purchase** is one spelling in the panel and its menu.
+- 1.0.4 to 1.0.10 install 1.0.11 by themselves when no session runs.
+
 ## 1.0.10
 
 - **Turn Off** ends the session at once, with no question, from the panel, the dial's stem, the quick menu and Option-click. VoiceOver says when the Mac is off. Quitting with a session running still asks.

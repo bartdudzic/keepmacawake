@@ -14,7 +14,7 @@ It works in any app that runs local MCP servers (Claude Desktop, Claude Code, Co
 | `keep_awake_start` | Starts a session of 1 to 168 whole hours, or without a time limit. |
 | `keep_awake_stop` | Ends the session and restores the normal sleep setting. |
 
-The agent starts timed sessions on its own and tells you in one line. It asks you first before a session without a time limit and before the first session on a Mac, which starts the free trial: `keep_awake_start` refuses both until the agent passes `user_agreed`. It never starts a second session over a running one. Battery use, buying and installing stay with you, in the menu bar panel or in Terminal.
+The agent starts timed sessions on its own and tells you in one line. It asks you first before a session without a time limit and before the first session on a Mac, which starts the free trial: `keep_awake_start` refuses both until the agent passes `user_agreed`. It never starts a second session over a running one. Battery use, Mute sound when lid closes (`keepmacawake config set --mute-on-lid-close on`, which keeps notifications quiet while the lid is closed), buying and installing stay with you, in the menu bar panel or in Terminal.
 
 ## Install
 

@@ -32,6 +32,7 @@ The user installed this so that you take care of it:
 
    It returns once the system service has confirmed the session (`"confirmed":true`) or refused it.
 3. Tell the user. If the lid will be closed, remind them to keep the Mac ventilated: never in a bag or on a soft surface.
+4. If the lid will stay closed overnight and `config.mute_on_lid_close` is `off`, you may offer once: "Keep Mac Awake can also mute the Mac while the lid is closed, so notifications stay quiet tonight. Turn that on?" Only if they agree, run `keepmacawake config set --mute-on-lid-close on --json`. It applies at once, also to the running session, mutes nothing while an external display is on, gives the sound back when the lid opens, and stays on for later sessions until the user turns it off. Skip this when `config.battery_available` is false (a desktop Mac has no lid and accepts only `off`).
 
 ## While it runs and after
 

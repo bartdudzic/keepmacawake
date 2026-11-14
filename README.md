@@ -14,7 +14,7 @@ A MacBook sleeps when you close the lid, and Apple's own way around it (closed-d
 
 ### Can a closed MacBook stay awake on battery?
 
-Yes, with Keep Mac Awake and battery use turned on. Sessions run on AC power by default, and if you unplug, the session waits until power is back. When you allow battery use, a session keeps the closed MacBook awake until the battery reaches the floor you pick (20% by default) and then ends, and on battery it also ends at a serious thermal state. Turn it on in the menu bar panel or with `keepmacawake config set --battery allowed --min-battery 30`. Guide: [keep a MacBook awake with the lid closed on battery](https://keepmacawake.com/blog/keep-macbook-awake-lid-closed-on-battery).
+Yes, with Keep Mac Awake and Run on battery on. On a MacBook running on battery, Run on battery turns itself on at 20% if you have never set it, so the first session starts with one click; with it off, sessions need AC power, and if you unplug, the session waits until power is back. With battery use on, a session keeps the closed MacBook awake until the battery reaches the floor you pick (20% by default) and then ends, and on battery it also ends at a serious thermal state. Turn it on or off in the menu bar panel, or with `keepmacawake config set --battery allowed --min-battery 30` and `--battery ac-only`. Guide: [keep a MacBook awake with the lid closed on battery](https://keepmacawake.com/blog/keep-macbook-awake-lid-closed-on-battery).
 
 ### Will Claude Code or another AI agent keep running if I close the lid?
 
@@ -37,10 +37,10 @@ More guides: [keepmacawake.com/blog](https://keepmacawake.com/blog/).
 ## What it does
 
 - **One button in the menu bar.** Start a session for 4, 8 or 24 hours, with no limit, or for any number of hours up to 168. The icon shows whether sleep prevention is confirmed.
-- **AC power by default.** If you unplug, the session pauses and continues when AC power returns. Optionally it runs on battery above a level you choose (20% by default) and ends there.
+- **AC power, or battery down to a level you choose.** With Run on battery on, a session runs on battery above that level (20% by default) and ends there; on a MacBook running on battery it turns itself on if you have never set it. With it off, unplugging pauses the session until AC power returns.
 - **Display off with the lid closed.** The built-in display goes dark when you close the lid, even if another app asked to keep it on.
 - **A command for Terminal and AI agents.** `keepmacawake start --hours 8`, `status`, `stop`, each with `--json`.
-- **Safe by design.** A separate supervising service restores the normal sleep setting if Keep Mac Awake's background service or the system service stops or hangs. Quitting the app always restores it. A battery session also ends when the Mac gets too hot.
+- **Safe by design.** A separate supervising service restores the normal sleep setting if Keep Mac Awake's background service or the system service stops or hangs. Quitting the app restores it too. A battery session also ends when the Mac gets too hot.
 - **Almost nothing leaves your Mac.** No accounts, analytics or logs. On its own the app only checks for a new version once a day, with nothing about your Mac in the request, and installs a new version by itself when no session runs; Restore purchase happens when you ask.
 
 ## What it does not do
@@ -57,11 +57,11 @@ More guides: [keepmacawake.com/blog](https://keepmacawake.com/blog/).
 
 ## Install
 
-1. Download `KeepMacAwake-1.0.10-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
+1. Download `KeepMacAwake-1.0.11-arm64.pkg` from the [latest release](https://github.com/bartdudzic/keepmacawake/releases/latest).
 2. Optional: check the download in Terminal. The result must match the `.sha256` file of the release.
 
    ```sh
-   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.10-arm64.pkg
+   shasum -a 256 ~/Downloads/KeepMacAwake-1.0.11-arm64.pkg
    ```
 
 3. Open the package and follow the steps. When it is done, Keep Mac Awake opens and shows its panel below the menu bar: pick how long and press Keep Awake. Later, click its icon in the menu bar, or open the app again from Applications.
@@ -82,9 +82,7 @@ The cask is in the [tap](https://github.com/bartdudzic/homebrew-tap) and install
 curl -fsSL https://keepmacawake.com/install.sh | sh
 ```
 
-An AI agent does not run this itself: it gives you the download link and leaves the installer to you.
-
-The [script](https://keepmacawake.com/install.sh) downloads the latest package from the releases, checks its SHA-256, the Developer ID signature and Apple's notarization, and runs macOS Installer. macOS asks for an administrator password once: in Terminal, or in a system dialog when an AI agent runs the command. It refuses while a session runs, and installing turns nothing on. Options: `--version X.Y.Z`, `--dry-run` (download and check only) and `--uninstall`, passed as `sh -s -- --uninstall`.
+The [script](https://keepmacawake.com/install.sh) downloads the latest package from the releases, checks its SHA-256, the Developer ID signature and Apple's notarization, and runs macOS Installer. macOS asks for an administrator password once: in Terminal, or in a system dialog when an AI agent runs it for you, with your agreement; if that dialog cannot be shown, it opens the checked package in Installer. It refuses while a session runs, and installing turns nothing on. Options: `--version X.Y.Z`, `--dry-run` (download and check only) and `--uninstall`, passed as `sh -s -- --uninstall`.
 
 ## Update
 
@@ -92,7 +90,7 @@ Download the new package and open it, or run the install command again. The pack
 
 ## Uninstall
 
-Choose **Uninstall Keep Mac Awake…** under More (…) in the panel: it opens the uninstaller that comes with the app, with nothing to download. Or open `KeepMacAwake-Uninstall-1.0.10-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
+Choose **Uninstall Keep Mac Awake…** under More (…) in the panel: it opens the uninstaller that comes with the app, with nothing to download. Or open `KeepMacAwake-Uninstall-1.0.11-arm64.pkg` from the same release. It restores the sleep setting, stops the services and removes the app and the command. Moving the app to the Trash does not remove the services. From Terminal: `curl -fsSL https://keepmacawake.com/install.sh | sh -s -- --uninstall`.
 
 ## Command line
 

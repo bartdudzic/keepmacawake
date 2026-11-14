@@ -35,7 +35,7 @@ Options: `--json`, `--agent` (only with `status`, not with `--json`), `--timeout
 With `--json`, stdout carries exactly one JSON object on one line; diagnostics go to stderr. Keys are stable; new keys may be added.
 
 ```json
-{"access":{"mac_id":"0123456789abcdef0123456789abcdef","max_hours":null,"purchase":null,"state":"purchased","trial_ends_at":null,"trial_seconds_left":null,"trial_started":true},"app_version":"1.0.0","config":{"battery":"ac-only","battery_available":true,"min_battery_percent":20,"mute_on_lid_close":"off","update_check":"daily"},"protocol_version":"2","result":"ok","schema_version":1,"session":{"confirmed":true,"hours":8,"last_end_reason":null,"live":true,"message":"Sleep prevention is on.","min_battery_percent":null,"phase":"active","remaining_seconds":28734,"unlimited":false},"update":{"available_version":null,"current_version":"1.0.0","install_command":null}}
+{"access":{"mac_id":"0123456789abcdef0123456789abcdef","max_hours":null,"purchase":null,"state":"purchased","trial_ends_at":null,"trial_seconds_left":null,"trial_started":true},"app_version":"1.0.0","config":{"battery":"ac-only","battery_available":true,"battery_chosen":true,"min_battery_percent":20,"mute_on_lid_close":"off","update_check":"daily"},"protocol_version":"2","result":"ok","schema_version":1,"session":{"confirmed":true,"hours":8,"last_end_reason":null,"live":true,"message":"Sleep prevention is on.","min_battery_percent":null,"phase":"active","remaining_seconds":28734,"unlimited":false},"update":{"available_version":null,"current_version":"1.0.0","install_command":null}}
 ```
 
 | Key | Meaning |
@@ -49,6 +49,7 @@ With `--json`, stdout carries exactly one JSON object on one line; diagnostics g
 | `session.last_end_reason` | Why the last session ended, for example `durationElapsed`, `batteryThresholdReached`, `clientStopped` |
 | `config.battery`, `config.min_battery_percent` | Settings for the next session |
 | `config.battery_available` | False on a Mac without a built-in battery: `config.battery` is then always `ac-only` and the battery settings cannot be changed |
+| `config.battery_chosen` | Since 1.0.11: true when the user set Run on battery themselves, on or off (in the panel, or with `keepmacawake config set --battery`); false while it is unset or was turned on by the battery default, and on a Mac without a built-in battery. When `config.battery` is `allowed` and this is false, an agent asks the user before a session that may run on battery. Missing before 1.0.11, when `allowed` was always the user's choice |
 | `config.update_check` | `daily` (the default) or `off` |
 | `config.mute_on_lid_close` | `on` or `off` (the default); since 1.0.10 |
 | `update.current_version`, `update.available_version` | This version, and a newer one found by the last update check, or null |
@@ -83,3 +84,4 @@ With `--json`, stdout carries exactly one JSON object on one line; diagnostics g
 - Run it as the logged-in user. `sudo keepmacawake` is refused, and a call from a user who is not at the console cannot start a session.
 - Any process of the same user can run the tool. It cannot tell a trusted agent from an untrusted one; it can only do what the panel does, and it never passes commands, paths or addresses to the system service.
 - Nothing starts automatically, also not after a restart.
+- `--mute-on-lid-close` is the user's setting, like the battery settings. An agent that leaves a long or overnight run with the lid closed may offer it, and turns it on only when the user agrees; it applies at once, also to the running session, and stays on until it is set to `off`.

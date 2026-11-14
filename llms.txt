@@ -1,10 +1,10 @@
 # Keep Mac Awake
 
-> A macOS menu bar app and command that keep an Apple silicon MacBook awake with the lid closed, for explicit sessions the user starts. AC power by default, optional battery use above a threshold, display off with the lid closed, a root watchdog that restores the sleep setting after failures. No data collection; on its own it goes online only for updates (a daily check and the download of a newer version, with nothing about the Mac), and Restore purchase only when the user chooses it. macOS 26 or later. Free for 3 days, then 9 USD, tax included, one time, per Mac.
+> A macOS menu bar app and command that keep an Apple silicon MacBook awake with the lid closed, for explicit sessions the user starts. battery use above a threshold (20% by default; on a MacBook on battery it turns itself on unless the user set it) or AC power only, display off with the lid closed, a root watchdog that restores the sleep setting if the background service or the system service stops or hangs. No data collection; on its own it goes online only for updates (a daily check and the download of a newer version, with nothing about the Mac), and Restore purchase only when the user chooses it. macOS 26 or later. Free for 3 days, then 9 USD, tax included, one time, per Mac.
 
 ## Install
 
-- An AI agent asks the person first, gives them the download link, https://keepmacawake.com/download (the installer package of the latest release), and asks them to open it. It does not download or run the installer itself. macOS asks the person for an administrator password once; there is no silent install.
+- People open the installer package from https://keepmacawake.com/download (the latest release). An AI agent installs it only with the person's agreement, while they are at the Mac: it downloads `install.sh` to a file, reads it and runs it with `sh`, as described in https://keepmacawake.com/agents.md. Either way macOS asks the person for an administrator password once, in its own dialog; there is no silent install.
 - In their own Terminal, people can also run `curl -fsSL https://keepmacawake.com/install.sh | sh` to install or update, and append `-s -- --uninstall` to remove it, `-s -- --dry-run` to check without installing, or `-s -- --version X.Y.Z` for a specific release. The script installs a package only after its SHA-256, the Developer ID signature and Apple's notarization check out. It refuses while a session runs (exit code 5). Exit codes: 0 done, 1 failed, 2 invalid arguments, 3 this Mac is not supported (Apple silicon and macOS 26 or later only), 4 action needed from the person, 5 a session is running.
 - Nothing is turned on by installing. Afterwards `keepmacawake status --json` confirms the background service answers.
 
@@ -15,6 +15,7 @@
 - `keepmacawake status --json`, `keepmacawake stop --json`
 - `keepmacawake capabilities --json` describes commands, phases and exit codes
 - Run as the logged-in user, never with sudo. Exit code 4 means the user has to act (AC power, or `purchase_required` during or after the trial); 5 means a session already runs or none runs; 7 means no answer in time, so check `status`.
+- Optional since 1.0.10, off by default: `keepmacawake config set --mute-on-lid-close on` mutes the Mac while a session runs with the lid closed (not with an external display on), so notifications stay quiet at night; the sound comes back when the lid opens. The user's setting: offer it before an overnight run, turn it on only with their agreement.
 - Agent skill: https://keepmacawake.com/skill/keep-mac-awake/SKILL.md
 
 ## Docs
