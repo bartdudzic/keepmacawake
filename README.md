@@ -124,7 +124,7 @@ codex mcp add keepmacawake -- npx -y keepmacawake-mcp    # Codex
 
 ## Integrations
 
-Start, check and stop sessions from [Alfred](integrations/alfred/README.md) (the `awake` keyword), [Apple Shortcuts](integrations/shortcuts/README.md), [Hammerspoon](integrations/hammerspoon/README.md) and [JetBrains IDEs](integrations/jetbrains/README.md), keep the Mac awake while the [Pi](integrations/pi/README.md) coding agent works (`pi install npm:pi-keepmacawake`), and while Python code or a Jupyter notebook runs ([Python](integrations/python/README.md), `pip install keepmacawake`). Each one only runs the `keepmacawake` command, under the MIT License; see [integrations](integrations/README.md).
+Start, check and stop sessions from [Alfred](integrations/alfred/README.md) (the `awake` keyword), [Apple Shortcuts](integrations/shortcuts/README.md), [Hammerspoon](integrations/hammerspoon/README.md) and [JetBrains IDEs](integrations/jetbrains/README.md), keep the Mac awake while the [Pi](integrations/pi/README.md) coding agent works (`pi install npm:@keepmacawake/pi`), and while Python code or a Jupyter notebook runs ([Python](integrations/python/README.md), `pip install keepmacawake`). Each one only runs the `keepmacawake` command, under the MIT License; see [integrations](integrations/README.md).
 
 ## Buying
 

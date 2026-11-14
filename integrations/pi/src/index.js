@@ -1,4 +1,4 @@
-// pi-keepmacawake: keeps a Mac awake while Pi works, through the keepmacawake
+// @keepmacawake/pi: keeps a Mac awake while Pi works, through the keepmacawake
 // command of the Keep Mac Awake app.
 //
 // By default it starts nothing by itself: /awake start [hours] starts a timed
@@ -36,15 +36,15 @@ const RUNNING_PHASES = ["starting", "active", "waitingForAC"];
 
 const MESSAGES = {
   notMac:
-    "pi-keepmacawake works only on a Mac with Apple silicon and macOS 26 or later, through the Keep Mac Awake app. " +
+    "@keepmacawake/pi works only on a Mac with Apple silicon and macOS 26 or later, through the Keep Mac Awake app. " +
     "It does nothing on this computer.",
   notInstalled:
     "Keep Mac Awake is not installed, so this Mac may sleep while Pi works, for example when the lid closes. " +
-    "pi-keepmacawake needs the Keep Mac Awake app (any Mac with Apple silicon and macOS 26 or later, free trial) " +
+    "@keepmacawake/pi needs the Keep Mac Awake app (any Mac with Apple silicon and macOS 26 or later, free trial) " +
     `and never installs anything itself. Get the app at ${WEBSITE_URL}`,
   firstSession:
     "Keep Mac Awake is installed, but no session has run on this Mac yet, and the first one starts its free trial. " +
-    "pi-keepmacawake leaves that step to you: run /awake start, or start a session from the Keep Mac Awake menu " +
+    "@keepmacawake/pi leaves that step to you: run /awake start, or start a session from the Keep Mac Awake menu " +
     "bar panel. After that, Pi keeps this Mac awake while it works.",
   batteryDefault: (floor) =>
     "Run on battery in Keep Mac Awake turned itself on, and you have not chosen it yet, so Pi starts no session by " +

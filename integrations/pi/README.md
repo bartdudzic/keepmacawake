@@ -1,9 +1,9 @@
 # Keep Mac Awake for Pi
 
-`pi-keepmacawake` is a [Pi](https://pi.dev) extension that keeps your Mac awake while Pi works, also with the lid closed. You start a timed session with `/awake start`; if you want, each Pi run can start one by itself. It uses [Keep Mac Awake](https://keepmacawake.com/?utm_source=pi-gallery&utm_medium=referral&utm_campaign=pi-package&utm_content=readme), a menu bar app for any Mac with Apple silicon on macOS 26 or later, through its `keepmacawake` command.
+`@keepmacawake/pi` is a [Pi](https://pi.dev) extension that keeps your Mac awake while Pi works, also with the lid closed. You start a timed session with `/awake start`; if you want, each Pi run can start one by itself. It uses [Keep Mac Awake](https://keepmacawake.com/?utm_source=pi-gallery&utm_medium=referral&utm_campaign=pi-package&utm_content=readme), a menu bar app for any Mac with Apple silicon on macOS 26 or later, through its `keepmacawake` command.
 
 ```sh
-pi install npm:pi-keepmacawake
+pi install npm:@keepmacawake/pi
 ```
 
 ## What it does
