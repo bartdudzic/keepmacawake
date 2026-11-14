@@ -124,7 +124,7 @@ codex mcp add keepmacawake -- npx -y keepmacawake-mcp    # Codex
 
 ## Integrations
 
-Start, check and stop sessions from [Alfred](integrations/alfred/README.md) (the `awake` keyword), [Apple Shortcuts](integrations/shortcuts/README.md) and [Hammerspoon](integrations/hammerspoon/README.md), and keep the Mac awake while the [Pi](integrations/pi/README.md) coding agent works (`pi install npm:pi-keepmacawake`). Each one only runs the `keepmacawake` command, under the MIT License; see [integrations](integrations/README.md).
+Start, check and stop sessions from [Alfred](integrations/alfred/README.md) (the `awake` keyword), [Apple Shortcuts](integrations/shortcuts/README.md), [Hammerspoon](integrations/hammerspoon/README.md) and [JetBrains IDEs](integrations/jetbrains/README.md), keep the Mac awake while the [Pi](integrations/pi/README.md) coding agent works (`pi install npm:pi-keepmacawake`), and while Python code or a Jupyter notebook runs ([Python](integrations/python/README.md), `pip install keepmacawake`). Each one only runs the `keepmacawake` command, under the MIT License; see [integrations](integrations/README.md).
 
 ## Buying
 
@@ -144,7 +144,7 @@ On its own, Keep Mac Awake goes online only for updates: a daily check with keep
 
 ## Source code
 
-The system services, the installer scripts and their tests are in this repository: everything that runs with administrator rights. The source is available under [PolyForm Shield 1.0.0](LICENSE): you can read, build and check it, but not use it in a competing product. It is not open source in the OSI sense. The menu bar app is not included. The [agent plugin](plugins/keep-mac-awake), the [MCP server](mcp) and the [integrations](integrations) for Alfred, Shortcuts, Hammerspoon and Pi are here too, under the MIT License ([plugin](plugins/keep-mac-awake/LICENSE), [server](mcp/LICENSE), [integrations](integrations/README.md)); they only call the `keepmacawake` command.
+The system services, the installer scripts and their tests are in this repository: everything that runs with administrator rights. The source is available under [PolyForm Shield 1.0.0](LICENSE): you can read, build and check it, but not use it in a competing product. It is not open source in the OSI sense. The menu bar app is not included. The [agent plugin](plugins/keep-mac-awake), the [MCP server](mcp) and the [integrations](integrations) for Alfred, Shortcuts, Hammerspoon, Pi, Python and JetBrains IDEs are here too, under the MIT License ([plugin](plugins/keep-mac-awake/LICENSE), [server](mcp/LICENSE), [integrations](integrations/README.md)); they only call the `keepmacawake` command.
 
 Each release lists the code hashes of the shipped services, so you can match them to a build from the tagged source.
 

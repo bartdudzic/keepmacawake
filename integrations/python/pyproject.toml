@@ -1,0 +1,67 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "keepmacawake"
+dynamic = ["version"]
+description = "Keep a Mac awake, also with the lid closed, while Python code or a notebook runs: a context manager and a Jupyter magic for the Keep Mac Awake app."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Keep Mac Awake", email = "hi@keepmacawake.com" }]
+keywords = [
+  "keepmacawake",
+  "keep-awake",
+  "prevent-sleep",
+  "sleep",
+  "lid-closed",
+  "caffeinate",
+  "macos",
+  "macbook",
+  "jupyter",
+  "ipython",
+  "machine-learning",
+  "training",
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: MacOS X",
+  "Framework :: IPython",
+  "Framework :: Jupyter",
+  "Intended Audience :: Developers",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: System :: Hardware",
+  "Topic :: Utilities",
+  "Typing :: Typed",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://keepmacawake.com/?utm_source=pypi&utm_medium=referral&utm_campaign=integrations&utm_content=home"
+Documentation = "https://github.com/bartdudzic/keepmacawake/tree/main/integrations/python#readme"
+Source = "https://github.com/bartdudzic/keepmacawake/tree/main/integrations/python"
+Changelog = "https://github.com/bartdudzic/keepmacawake/blob/main/integrations/python/CHANGELOG.md"
+"Command line reference" = "https://github.com/bartdudzic/keepmacawake/blob/main/docs/COMMAND-LINE.md"
+
+[tool.hatch.version]
+path = "src/keepmacawake/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = ["src/", "tests/", "README.md", "CHANGELOG.md", "LICENSE", "pyproject.toml"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/keepmacawake"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]

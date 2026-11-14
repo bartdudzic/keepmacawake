@@ -1,0 +1,69 @@
+<idea-plugin>
+    <id>com.keepmacawake.jetbrains</id>
+    <name>Keep Mac Awake</name>
+    <vendor email="hi@keepmacawake.com" url="https://keepmacawake.com/?utm_source=jetbrains-marketplace&amp;utm_medium=referral&amp;utm_campaign=integrations&amp;utm_content=vendor">Keep Mac Awake</vendor>
+
+    <description><![CDATA[
+<p>Keeps your Mac awake from the IDE, also with the MacBook lid closed, so a long build, a test suite or an AI agent
+such as Junie keeps running. The plugin controls the
+<a href="https://keepmacawake.com/?utm_source=jetbrains-marketplace&utm_medium=referral&utm_campaign=integrations&utm_content=description">Keep Mac Awake</a>
+menu bar app through its <code>keepmacawake</code> command.</p>
+
+<p><b>The Keep Mac Awake app is required.</b> It has a free trial and runs on any Mac with Apple silicon and
+macOS 26 or later. Without the app, the plugin tells you what is missing and installs nothing.</p>
+
+<ul>
+  <li><b>Start</b> (Tools | Keep Mac Awake): keeps the Mac awake for the hours you choose, 8 by default. The session
+  ends by itself after its hours, or with Stop, and normal sleep returns. During the free trial a session lasts at
+  most 8 hours.</li>
+  <li><b>Stop</b>: ends the session, only when this IDE started it. A session started from the menu bar, a terminal
+  or an agent is left running; stop it from the menu bar panel.</li>
+  <li><b>Status</b>: whether a session runs, its time left and the free trial.</li>
+  <li><b>Keep this Mac awake while a run configuration runs</b> (optional, off by default, in Settings | Tools |
+  Keep Mac Awake): a run starts a timed session, and the end of the run ends it, only when the plugin started
+  it.</li>
+  <li><b>On battery</b>: on a MacBook running on battery, Keep Mac Awake turns Run on battery on at 20% unless you
+  set it yourself. While it turned itself on, Start asks before a session that may run on battery, and runs start
+  no session until you said yes. The plugin never changes the setting.</li>
+</ul>
+
+<p>The plugin runs only <code>/usr/local/bin/keepmacawake</code> with <code>status</code>, <code>start --hours N</code>
+and <code>stop</code>. It makes no network connection and reads no project files. On Windows and Linux it loads,
+and its actions explain that it is for Macs.</p>
+]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Keep Mac Awake" displayType="BALLOON"/>
+        <applicationConfigurable parentId="tools"
+                                 instance="com.keepmacawake.jetbrains.ide.KeepMacAwakeConfigurable"
+                                 id="com.keepmacawake.jetbrains.settings"
+                                 displayName="Keep Mac Awake"/>
+    </extensions>
+
+    <applicationListeners>
+        <listener class="com.keepmacawake.jetbrains.ide.KeepMacAwakeLifecycle"
+                  topic="com.intellij.ide.AppLifecycleListener"/>
+    </applicationListeners>
+
+    <projectListeners>
+        <listener class="com.keepmacawake.jetbrains.ide.RunHoldListener"
+                  topic="com.intellij.execution.ExecutionListener"/>
+    </projectListeners>
+
+    <actions>
+        <group id="KeepMacAwake.Menu" text="Keep Mac Awake" popup="true">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <action id="KeepMacAwake.Start" class="com.keepmacawake.jetbrains.ide.StartAction"
+                    text="Start Keep Mac Awake..."
+                    description="Keep this Mac awake, also with the lid closed, for the hours you choose"/>
+            <action id="KeepMacAwake.Stop" class="com.keepmacawake.jetbrains.ide.StopAction"
+                    text="Stop Keep Mac Awake"
+                    description="End the Keep Mac Awake session this IDE started"/>
+            <action id="KeepMacAwake.Status" class="com.keepmacawake.jetbrains.ide.StatusAction"
+                    text="Keep Mac Awake Status"
+                    description="Show whether a Keep Mac Awake session runs and its time left"/>
+        </group>
+    </actions>
+</idea-plugin>
