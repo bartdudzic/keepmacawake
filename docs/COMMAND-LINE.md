@@ -26,7 +26,7 @@ The session belongs to a per-user background service (the coordinator). The tool
 
 During the 3-day trial, counted from the first session on the Mac, a session lasts at most 8 hours; `start --unlimited` or `--hours` above 8 exits with 4 and `purchase_required` without touching anything, and so does any `start` after the trial. A running session is never ended by the trial. With `purchase_required` the JSON error says why (`reason`), carries a message addressed to the person at the Mac with the price and the steps (`user_message`), and lists the commands that may follow (`next_steps`), so an agent can pass it on without guessing.
 
-`start` returns after the system service has confirmed the session, or refused it. With AC-only settings on battery the session is refused; with AC disconnected later, it waits for AC power (`phase` `waitingForAC`, `confirmed` false).
+`start` returns after the system service has confirmed the session, or refused it. Since 1.0.11, on a MacBook running on battery with no session, Run on battery turns itself on at the stored threshold (20% by default) when `status`, `config get` or `start` runs, unless the user has set it; an installation from before 1.0.11 keeps its stored setting. With AC-only settings on battery the session is refused, and the message names `keepmacawake config set --battery allowed` (or `--min-battery` at or below the threshold); with AC disconnected later, it waits for AC power (`phase` `waitingForAC`, `confirmed` false).
 
 Options: `--json`, `--agent` (only with `status`, not with `--json`), `--timeout SECONDS` (1-120, default 15), `--no-input` (the tool never prompts), `--help`, `--version`.
 

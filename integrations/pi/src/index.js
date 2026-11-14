@@ -46,6 +46,12 @@ const MESSAGES = {
     "Keep Mac Awake is installed, but no session has run on this Mac yet, and the first one starts its free trial. " +
     "pi-keepmacawake leaves that step to you: run /awake start, or start a session from the Keep Mac Awake menu " +
     "bar panel. After that, Pi keeps this Mac awake while it works.",
+  batteryDefault: (floor) =>
+    "Run on battery in Keep Mac Awake turned itself on, and you have not chosen it yet, so Pi starts no session by " +
+    `itself: when the Mac is unplugged, a session would run on battery down to ${floor}%. Run /awake start to start ` +
+    "one anyway; Pi then starts them by itself until it quits. To let Pi start them every time, set it yourself with " +
+    "keepmacawake config set --battery allowed in Terminal; to keep sessions on AC power, turn Run on battery off in " +
+    "the Keep Mac Awake menu bar panel.",
   trialEnded:
     "The Keep Mac Awake free trial on this Mac has ended, so Pi cannot keep this Mac awake. The full version is in " +
     "the Keep Mac Awake menu bar panel.",
@@ -140,7 +146,17 @@ export function readState(reply) {
       maxHours: wholeNumber(access.max_hours) || null,
     },
     batteryAvailable: config.battery_available === true,
+    batteryAllowed: config.battery === "allowed",
+    // False only when the app (1.0.11 or later) says Run on battery turned itself on; an
+    // older app sends no battery_chosen, and there battery use was always the user's choice.
+    batteryChosen: config.battery_chosen !== false,
+    minBatteryPercent: wholeNumber(config.min_battery_percent),
   };
+}
+
+/** Run on battery turned itself on and the user has not chosen it: a session may run on battery. */
+export function batteryNotChosen(state) {
+  return state.batteryAvailable && state.batteryAllowed && !state.batteryChosen;
 }
 
 export function isRunning(state) {
@@ -263,6 +279,8 @@ export function setup(pi, options = {}) {
   const { auto, chosen } = readAuto(env, configFile);
   // chosen: the user picked on or off, so the how-to notice is not needed.
   const settings = { auto, chosen, hours: parseHours(env.KEEPMACAWAKE_PI_HOURS) ?? DEFAULT_HOURS };
+  // The user's own /awake start in this Pi process is their yes to sessions that may run on battery.
+  let batteryAgreed = false;
   const saidOnce = new Set(); // notices given once per Pi process
   let saidThisRun = new Set(); // notices given once per run
   let running = false; // a Pi run is in progress in this process and holds the Mac awake
@@ -356,6 +374,10 @@ export function setup(pi, options = {}) {
     // The first session on a Mac starts the free trial: that is the user's call.
     if (state.access.state === "trial" && state.access.trialStarted === false) {
       return tell(ctx, MESSAGES.firstSession, "info", "first-session");
+    }
+    // Battery use needs the user's yes; the app's default is not one. /awake start is.
+    if (!batteryAgreed && batteryNotChosen(state)) {
+      return tell(ctx, MESSAGES.batteryDefault(state.minBatteryPercent ?? 20), "info", "battery-default");
     }
     const hours = Math.min(settings.hours, state.access.maxHours ?? settings.hours);
     const { run } = await start(ctx, hours);
@@ -469,7 +491,10 @@ export function setup(pi, options = {}) {
             const { run, hours: started } = await start(ctx, hours);
             if (run.exitCode === 0 && !run.missing) {
               showStatus(ctx, "Mac awake");
-              tell(ctx, `Keep Mac Awake keeps this Mac awake for ${started} hours, also with the lid closed. Pi leaves this session running; /awake stop ends it.`);
+              if (batteryNotChosen(readState(run.reply))) batteryAgreed = true;
+              const floor = wholeNumber(run.reply?.session?.min_battery_percent);
+              const battery = floor != null ? ` When the Mac is unplugged, it runs on battery down to ${floor}%.` : "";
+              tell(ctx, `Keep Mac Awake keeps this Mac awake for ${started} hours, also with the lid closed.${battery} Pi leaves this session running; /awake stop ends it.`);
               return tell(ctx, MESSAGES.ventilation, "info", "ventilation");
             }
             if (run.exitCode === 5) return tell(ctx, "A Keep Mac Awake session is already running; /awake shows its time left.");

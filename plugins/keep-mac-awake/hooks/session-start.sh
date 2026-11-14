@@ -63,6 +63,11 @@ state() {
         checking|starting|stopping) echo "The session is changing state." ;;
         *) echo "Keep Mac Awake needs attention." ;;
     esac
+    # Since 1.0.11 Run on battery can turn itself on; that default is not the user's consent.
+    if [ "$phase" = idle ] && [ "$(field config.battery_available)" = true ] \
+        && [ "$(field config.battery)" = allowed ] && [ "$(field config.battery_chosen)" = false ]; then
+        echo "Run on battery turned itself on and the user has not chosen it: ask before a session that may run on battery."
+    fi
     hours=$(number "$(field access.max_hours)") || hours=8
     case $(field access.state) in
         trial)

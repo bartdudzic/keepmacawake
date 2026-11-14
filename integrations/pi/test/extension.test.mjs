@@ -36,8 +36,8 @@ afterEach(() => {
   delete process.env.FAKE_KMA_DIR;
 });
 
-function setFake({ session = { live: false }, access = {}, battery_available = true, startPhase } = {}) {
-  writeFileSync(join(dir, "state.json"), JSON.stringify({ session, access, battery_available, startPhase }));
+function setFake({ session = { live: false }, access = {}, battery_available = true, startPhase, config } = {}) {
+  writeFileSync(join(dir, "state.json"), JSON.stringify({ session, access, battery_available, startPhase, config }));
 }
 
 function force(replies) {
@@ -320,6 +320,64 @@ test("the first session, which starts the free trial, is left to the user", asyn
   await pi.settle();
   assert.equal(fakeState().session.live, true);
   assert.ok(!commands().includes("stop"));
+});
+
+test("Run on battery that turned itself on is left to the user: no automatic start", async () => {
+  setFake({ config: { battery: "allowed", battery_chosen: false, min_battery_percent: 20 } });
+  const pi = makePi();
+  await pi.run();
+  assert.deepEqual(commands(), ["status"]);
+  assert.match(pi.texts(), /turned itself on/);
+  assert.match(pi.texts(), /down to 20%/);
+  assert.match(pi.texts(), /\/awake start/);
+  await pi.turn();
+  await pi.settle();
+  await pi.run();
+  assert.equal(pi.notes.filter((n) => /turned itself on/.test(n.text)).length, 1, "said once per Pi process");
+  assert.equal(fakeState().session.live, false);
+  await pi.settle();
+
+  // /awake start is the user's own yes; it says that the session may run on battery.
+  await pi.awake("start 3");
+  assert.equal(fakeState().session.hours, 3);
+  assert.match(pi.texts(), /for 3 hours, also with the lid closed\. When the Mac is unplugged, it runs on battery down to 20%\./);
+
+  // That yes holds for this Pi process: a session that ran out of time is started again.
+  setFake({ session: { live: false, last_end_reason: "durationElapsed" }, config: { battery: "allowed", battery_chosen: false } });
+  await pi.run();
+  assert.equal(fakeState().session.live, true);
+  assert.equal(fakeState().session.hours, 8);
+});
+
+test("Run on battery that turned itself on: a new Pi process asks again", async () => {
+  setFake({ config: { battery: "allowed", battery_chosen: false } });
+  const first = makePi();
+  await first.awake("start 2");
+  setFake({ config: { battery: "allowed", battery_chosen: false } });
+  const second = makePi();
+  await second.run();
+  assert.equal(fakeState().session.live, false);
+  assert.match(second.texts(), /turned itself on/);
+});
+
+test("Run on battery the user chose, or from an app before 1.0.11, starts as before", async () => {
+  for (const config of [{ battery: "allowed", battery_chosen: true }, { battery: "allowed" }, { battery: "ac-only", battery_chosen: false }]) {
+    setFake({ config });
+    const pi = makePi();
+    await pi.run();
+    assert.equal(fakeState().session.live, true, JSON.stringify(config));
+    assert.doesNotMatch(pi.texts(), /turned itself on/);
+    await pi.settle();
+    rmSync(join(dir, "calls.jsonl"), { force: true });
+  }
+});
+
+test("a Mac without a built-in battery never hears of Run on battery", async () => {
+  setFake({ battery_available: false, config: { battery: "allowed", battery_chosen: false } });
+  const pi = makePi();
+  await pi.run();
+  assert.equal(fakeState().session.live, true);
+  assert.doesNotMatch(pi.texts(), /[Bb]attery/);
 });
 
 test("during the trial, sessions are capped at its limit", async () => {

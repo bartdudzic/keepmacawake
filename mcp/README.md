@@ -14,7 +14,7 @@ It works in any app that runs local MCP servers (Claude Desktop, Claude Code, Co
 | `keep_awake_start` | Starts a session of 1 to 168 whole hours, or without a time limit. |
 | `keep_awake_stop` | Ends the session and restores the normal sleep setting. |
 
-The agent starts timed sessions on its own and tells you in one line. It asks you first before a session without a time limit and before the first session on a Mac, which starts the free trial: `keep_awake_start` refuses both until the agent passes `user_agreed`. It never starts a second session over a running one. Battery use, Mute sound when lid closes (`keepmacawake config set --mute-on-lid-close on`, which keeps notifications quiet while the lid is closed), buying and installing stay with you, in the menu bar panel or in Terminal.
+The agent starts timed sessions on its own and tells you in one line. It asks you first before a session without a time limit, before the first session on a Mac, which starts the free trial, and before a session that may run on battery when Run on battery turned itself on (on a MacBook on battery, at 20%, unless you set it yourself): `keep_awake_start` refuses each of these until the agent passes `user_agreed`, or `battery_agreed` for battery use; one never stands in for the other. When you set Run on battery yourself, or with Keep Mac Awake 1.0.10 or earlier, a session the agent starts may run on battery down to your level without a question, and the agent says so. It never starts a second session over a running one. The battery settings, Mute sound when lid closes (`keepmacawake config set --mute-on-lid-close on`, which keeps notifications quiet while the lid is closed), buying and installing stay with you, in the menu bar panel or in Terminal.
 
 ## Install
 
@@ -78,7 +78,7 @@ The server sends nothing anywhere. Its results become part of the agent's conver
 
 - "Keep Mac Awake is not installed": install the app from [keepmacawake.com](https://keepmacawake.com), or set `KEEPMACAWAKE_CLI` if the command is somewhere else.
 - "Its background service did not answer": open Keep Mac Awake from Applications. An MCP host that runs servers in a sandbox may block the connection to the service.
-- A session refused on battery: plug in AC power, or allow battery use in the menu bar panel.
+- A session refused on battery: Run on battery is off or the charge is at the threshold; plug in AC power, or turn on Run on battery in the menu bar panel or with `keepmacawake config set --battery allowed`.
 
 ## Development
 

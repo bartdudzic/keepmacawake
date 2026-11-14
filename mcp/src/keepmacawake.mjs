@@ -120,6 +120,8 @@ export function pickState(reply) {
       available: bool(config.battery_available),
       allowed: config.battery === "allowed" ? true : config.battery === "ac-only" ? false : null,
       min_percent: wholeNumber(config.min_battery_percent),
+      // Whether the user set Run on battery themselves (app 1.0.11 or later); null from an older app.
+      chosen: bool(config.battery_chosen),
     },
     update_available: version(reply.update?.available_version),
     app_version: version(reply.app_version),
@@ -142,6 +144,20 @@ function isRunning(state) {
   return live === true && ["starting", "active", "waitingForAC"].includes(phase);
 }
 
+/**
+ * Run on battery turned itself on (the app's default since 1.0.11) and the user has not
+ * chosen it: a session may run on battery, which needs the user's yes. A reply without
+ * battery_chosen comes from an older app, where battery use was always the user's choice.
+ */
+export function batteryNotChosen(state) {
+  const { battery } = state;
+  return battery.available === true && battery.allowed === true && battery.chosen === false;
+}
+
+function batteryFloor(state) {
+  return state.battery.min_percent ?? 20;
+}
+
 /** A few plain lines on the session, the trial and an update. */
 export function describeState(state) {
   const lines = [];
@@ -151,6 +167,12 @@ export function describeState(state) {
   } else if (!isRunning(state)) {
     lines.push("No session is running; the Mac sleeps normally.");
     if (session.last_end_reason) lines.push(`The last session ended with ${session.last_end_reason}.`);
+    if (batteryNotChosen(state)) {
+      lines.push(
+        `Run on battery turned itself on in Keep Mac Awake; the user has not chosen it. When the Mac is unplugged, a ` +
+          `session would run on battery down to ${batteryFloor(state)}%, so ask the user before starting one.`,
+      );
+    }
   } else if (session.phase === "waitingForAC") {
     lines.push("A session is waiting for AC power.");
   } else if (session.phase === "starting") {
@@ -225,11 +247,15 @@ export function interpret(action, run, { platform = process.platform, hours = nu
       return { ok: true, text: "The session is set up but waits for AC power: ask the user to plug in the Mac.", data };
     }
     const length = state.session.unlimited ? "without a time limit" : `for ${state.session.hours ?? hours} hours`;
+    const battery =
+      state.session.min_battery_percent != null
+        ? ` When the Mac is unplugged, this session runs on battery down to ${state.session.min_battery_percent}%: say so in the same line.`
+        : "";
     return {
       ok: true,
       text:
         `Keep Mac Awake is on ${length}, so the user can close the lid. Tell them in one line, and remind them to ` +
-        "keep the Mac ventilated: never in a bag or on a soft surface.",
+        `keep the Mac ventilated: never in a bag or on a soft surface.${battery}`,
       data,
     };
   }

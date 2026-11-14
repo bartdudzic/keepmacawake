@@ -1,6 +1,6 @@
 {
   "name": "pi-keepmacawake",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Pi extension that keeps a Mac awake, also with the lid closed, through the Keep Mac Awake app: /awake start for a timed session, or opt in to a session with each Pi run.",
   "type": "module",
   "main": "src/index.js",
