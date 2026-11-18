@@ -16,6 +16,7 @@
 - `keepmacawake capabilities --json` describes commands, phases and exit codes
 - Run as the logged-in user, never with sudo. Exit code 4 means the user has to act (AC power, or `purchase_required` during or after the trial); 5 means a session already runs or none runs; 7 means no answer in time, so check `status`.
 - Optional since 1.0.10, off by default: `keepmacawake config set --mute-on-lid-close on` mutes the Mac while a session runs with the lid closed (not with an external display on), so notifications stay quiet at night; the sound comes back when the lid opens. The user's setting: offer it before an overnight run, turn it on only with their agreement.
+- A person who installed it and waits for a long job can let the agent start the first session on its first long run: the agent asks first, because that session starts the free trial, and keeps it to `--hours 8` or less during the trial. Allow rules for `keepmacawake` (Claude Code, Codex, Copilot CLI) are in https://keepmacawake.com/agents.md under "Teach your agent once".
 - Agent skill: https://keepmacawake.com/skill/keep-mac-awake/SKILL.md
 
 ## Docs

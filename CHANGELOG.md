@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.12
+
+- The installer's welcome page names the password it asks for: "An administrator's password, once, because sleep is a setting for the whole Mac. On a work Mac without one, ask your IT team."
+- On a new installation's first opening, the first automatic update check (the one that carries `first=1`) waits about 2 s after the coordinator starts instead of about 20 s, so the count is not lost to a Mac that sleeps or logs out right after installing. Every other launch, and a launch after that check was answered, waits about 20 s as before. Nothing more is sent.
+- The first accepted Start on a Mac with no first-session record sends one update check at once, carrying `?session=1` as before, instead of waiting for the next daily check, so the first session is counted on its own day. One extra request per Mac, ever, only with the update check on; nothing new is sent. The mark (`updateFirstSessionPending`) stays until a check that carried it is answered, so a failed report is sent again on the usual schedule.
+- When the first panel (the welcome) closes without a session, the panel's later openings show one line: "Start it when your job is ready: click the moon, or let your agent run `keepmacawake start`." It is never shown again once a session has run. No notification and no timer; the preferences keep `comeBackLinePending` until then.
+- The release check (`scripts/verify-pkg.py`) fails when either package carries an installation-check or volume-check script, a `<script>` in its Distribution, a choice attribute that is an expression, or an InstallationCheck or VolumeCheck file: each would make Installer ask to run a program before the welcome page.
+- 1.0.4 to 1.0.11 install 1.0.12 by themselves when no session runs.
+
 ## 1.0.11
 
 - On a MacBook on battery, Run on battery turns itself on with the 20% threshold (or the threshold already chosen) when the user has never set it, so the first session starts with one click from the panel or with `keepmacawake start`. The coordinator applies it when the panel or the command line asks for the state or a Start, while no session runs; never on a Mac without a built-in battery and never over the user's own on or off. The preferences record that choice as `allowsBatteryChosen`; an installation from before 1.0.11 keeps its stored switch as the user's choice, so an existing off stays off. The helper and the watchdog are unchanged: a battery session still ends at the threshold, on unknown readings and at a serious thermal state, and normal sleep returns when it ends.

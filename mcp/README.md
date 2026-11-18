@@ -47,6 +47,8 @@ Claude Desktop, Cursor and other apps with a JSON configuration (`claude_desktop
 
 The server is the npm package `keepmacawake-mcp` and is listed in the official MCP Registry as `com.keepmacawake/mcp`.
 
+Installed the app but waiting for a long job to start your first session? The agent can start it itself on its first long run (`keep_awake_start`, which runs `keepmacawake start`): it asks you first, because the first session starts the free trial, and keeps it to 8 hours, the longest session during the trial. In Claude Code, `mcp__keepmacawake` in `permissions.allow` lets it use these tools without an approval prompt.
+
 If the app reports that `npx` is not found, give its full path, for example `/opt/homebrew/bin/npx`.
 
 From a clone of this repository instead of npm:
